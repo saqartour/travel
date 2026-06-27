@@ -12,8 +12,8 @@
         .section { display: none; }
         .section.active { display: block; }
         .nav-active { color: #0f766e; font-weight: 600; border-bottom: 3px solid #0f766e; }
-        .chat-bubble { animation: fadeInUp 0.2s ease; }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } }
+        .premium-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .premium-card:hover { transform: translateY(-4px); box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1); }
     </style>
 </head>
 <body class="bg-slate-50">
@@ -33,7 +33,6 @@
                 <button onclick="showSection('live-chat')" class="px-4 py-2" id="nav-live-chat">Live Chat</button>
                 <button onclick="showSection('wallet')" class="px-4 py-2" id="nav-wallet">Wallet</button>
                 <button onclick="showSection('profile')" class="px-4 py-2" id="nav-profile">Profile</button>
-                <button onclick="showSection('admin')" class="px-4 py-2 text-red-600" id="nav-admin">Admin</button>
             </div>
 
             <div id="user-nav"></div>
@@ -42,12 +41,12 @@
 
     <!-- FORUM SECTION -->
     <div id="forum" class="section active max-w-7xl mx-auto px-6 pt-8">
-        <div class="flex justify-between items-end mb-6">
+        <div class="flex justify-between items-end mb-8">
             <div>
                 <h1 class="text-4xl font-semibold heading">Community Discussions</h1>
-                <p class="text-slate-600">Honest advice from travelers in Georgia & the Caucasus</p>
+                <p class="text-slate-600 mt-1">Honest conversations from travelers across the Caucasus</p>
             </div>
-            <button onclick="showCreateThreadModal()" class="bg-teal-700 hover:bg-teal-800 text-white px-6 py-3 rounded-3xl flex items-center gap-x-2 font-medium">
+            <button onclick="showCreateThreadModal()" class="bg-teal-700 hover:bg-teal-800 transition px-6 py-3 rounded-3xl text-white font-medium flex items-center gap-x-2">
                 <i class="fa-solid fa-plus"></i> <span>New Thread</span>
             </button>
         </div>
@@ -55,29 +54,23 @@
         <div class="bg-white rounded-3xl shadow border border-slate-200">
             <div class="px-6 py-4 border-b flex justify-between items-center bg-slate-50">
                 <span class="font-semibold">All Threads</span>
-                <select id="sort-threads" onchange="renderThreads()" class="text-sm border rounded-2xl px-3 py-1">
-                    <option value="newest">Newest</option>
-                    <option value="points">Highest Points</option>
-                    <option value="comments">Most Comments</option>
-                </select>
             </div>
             <div id="threads-list" class="divide-y"></div>
         </div>
     </div>
 
-    <!-- LIVE CHAT SECTION -->
-    <div id="live-chat" class="section max-w-4xl mx-auto px-6 pt-8">
+    <!-- LIVE CHAT SECTION (Categorized by Region) -->
+    <div id="live-chat" class="section max-w-5xl mx-auto px-6 pt-8">
         <div class="flex justify-between items-center mb-6">
             <div>
-                <h2 class="text-3xl font-semibold">Live Community Chat</h2>
-                <p class="text-slate-600">Real-time chat with other travelers</p>
+                <h2 class="text-3xl font-semibold">Live Regional Chat</h2>
+                <p class="text-slate-600">Talk with travelers in real-time by region</p>
             </div>
-            <div class="flex items-center gap-x-2 text-sm">
-                <div class="flex items-center gap-x-1.5">
-                    <div class="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse"></div>
-                    <span class="font-medium">Live</span>
-                </div>
-            </div>
+        </div>
+
+        <!-- Chat Category Tabs -->
+        <div class="flex gap-2 mb-4 flex-wrap" id="chat-categories">
+            <!-- Populated by JS -->
         </div>
 
         <div class="bg-white rounded-3xl shadow border flex flex-col h-[620px]">
@@ -94,53 +87,118 @@
         </div>
     </div>
 
-    <!-- WALLET, PROFILE, ADMIN sections are available in the full version -->
-    <!-- I kept the code clean. The core features (Forum + Real-time Chat) are fully working -->
+    <!-- WALLET SECTION -->
+    <div id="wallet" class="section max-w-4xl mx-auto px-6 pt-8">
+        <h2 class="text-3xl font-semibold mb-6">Your Wallet & Points</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Balance Card -->
+            <div class="bg-white rounded-3xl p-8 shadow border">
+                <div class="text-sm text-slate-500">Wallet Balance</div>
+                <div class="text-5xl font-semibold mt-2">$<span id="wallet-balance">0</span></div>
+            </div>
+
+            <!-- Points Card -->
+            <div class="bg-white rounded-3xl p-8 shadow border">
+                <div class="text-sm text-slate-500">Your Points</div>
+                <div class="text-5xl font-semibold mt-2 text-teal-700"><span id="points-balance">0</span> pts</div>
+            </div>
+        </div>
+
+        <!-- Crypto Top-up -->
+        <div class="bg-white rounded-3xl p-8 shadow border mt-6">
+            <h3 class="font-semibold mb-4">Top Up with Cryptocurrency</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <input id="topup-amount" type="number" value="50" class="border rounded-2xl px-4 py-3">
+                <select id="crypto-type" class="border rounded-2xl px-4 py-3">
+                    <option value="USDT">USDT (TRC20)</option>
+                    <option value="BTC">Bitcoin</option>
+                    <option value="ETH">Ethereum</option>
+                </select>
+                <button onclick="topUpWallet()" class="bg-teal-700 text-white rounded-2xl font-medium">Top Up</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PROFILE SECTION -->
+    <div id="profile" class="section max-w-2xl mx-auto px-6 pt-8">
+        <h2 class="text-3xl font-semibold mb-6">Your Profile</h2>
+        <div id="profile-content" class="bg-white rounded-3xl p-8 shadow border"></div>
+    </div>
+
+    <!-- Modals -->
+    <!-- Registration Modal -->
+    <div id="register-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-[100]">
+        <div class="bg-white w-full max-w-md mx-4 rounded-3xl p-8">
+            <h3 class="text-2xl font-semibold mb-6">Create Account</h3>
+            
+            <div class="space-y-4">
+                <input id="reg-username" type="text" placeholder="Choose username" class="w-full border rounded-2xl px-4 py-3">
+                <input id="reg-referral" type="text" placeholder="Referral code (optional)" class="w-full border rounded-2xl px-4 py-3">
+            </div>
+
+            <div class="flex gap-3 mt-6">
+                <button onclick="hideRegisterModal()" class="flex-1 py-3 border rounded-3xl">Cancel</button>
+                <button onclick="registerUser()" class="flex-1 py-3 bg-teal-700 text-white rounded-3xl">Create Account</button>
+            </div>
+        </div>
+    </div>
 
     <script>
-        // ==================== CONFIG ====================
+        // ==================== DATA ====================
         let currentUser = JSON.parse(localStorage.getItem('gtf_user')) || null;
         let threads = JSON.parse(localStorage.getItem('gtf_threads')) || [];
-        let comments = JSON.parse(localStorage.getItem('gtf_comments')) || [];
         let chatMessages = JSON.parse(localStorage.getItem('gtf_chat')) || [];
+        let currentChatCategory = 'General';
 
         const chatChannel = new BroadcastChannel('gtf_live_chat');
 
         function saveAll() {
             localStorage.setItem('gtf_user', JSON.stringify(currentUser));
             localStorage.setItem('gtf_threads', JSON.stringify(threads));
-            localStorage.setItem('gtf_comments', JSON.stringify(comments));
             localStorage.setItem('gtf_chat', JSON.stringify(chatMessages));
         }
 
-        // ==================== REAL-TIME CHAT ====================
+        // ==================== REAL-TIME CHAT (Categorized) ====================
         function initChat() {
             chatChannel.onmessage = (event) => {
-                if (event.data.type === 'new_message') {
+                if (event.data.type === 'new_message' && event.data.category === currentChatCategory) {
                     chatMessages.push(event.data.message);
                     saveAll();
-                    if (document.getElementById('live-chat').classList.contains('active')) {
-                        renderChatMessages();
-                    }
+                    renderChatMessages();
                 }
             };
+
+            renderChatCategories();
+            renderChatMessages();
+        }
+
+        function renderChatCategories() {
+            const container = document.getElementById('chat-categories');
+            const categories = ['General', 'Tbilisi', 'Batumi', 'Mountains', 'Armenia', 'Azerbaijan'];
+            
+            container.innerHTML = categories.map(cat => 
+                `<button onclick="switchChatCategory('${cat}')" class="px-4 py-2 text-sm rounded-3xl border ${cat === currentChatCategory ? 'bg-teal-700 text-white' : 'bg-white'}">${cat}</button>`
+            ).join('');
+        }
+
+        function switchChatCategory(category) {
+            currentChatCategory = category;
+            renderChatCategories();
             renderChatMessages();
         }
 
         function renderChatMessages() {
             const container = document.getElementById('chat-messages');
-            if (!container) return;
+            const filtered = chatMessages.filter(m => m.category === currentChatCategory);
 
-            container.innerHTML = chatMessages.map(msg => {
+            container.innerHTML = filtered.map(msg => {
                 const isMine = currentUser && msg.username === currentUser.username;
                 return `
                     <div class="flex ${isMine ? 'justify-end' : ''}">
-                        <div class="max-w-[70%] ${isMine ? 'bg-teal-700 text-white' : 'bg-white border'} rounded-3xl px-5 py-3 chat-bubble">
+                        <div class="max-w-[75%] ${isMine ? 'bg-teal-700 text-white' : 'bg-white border'} rounded-3xl px-5 py-3">
                             <div class="flex items-center gap-x-2 mb-1">
                                 <span class="font-semibold text-sm">${msg.username}</span>
-                                <span class="text-xs ${isMine ? 'text-teal-200' : 'text-slate-400'}">
-                                    ${new Date(msg.timestamp).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}
-                                </span>
                             </div>
                             <div>${msg.message}</div>
                         </div>
@@ -151,10 +209,7 @@
         }
 
         function sendChatMessage() {
-            if (!currentUser) {
-                alert("Please log in to use the chat");
-                return;
-            }
+            if (!currentUser) { alert("Please log in"); return; }
             const input = document.getElementById('chat-input');
             const message = input.value.trim();
             if (!message) return;
@@ -163,36 +218,67 @@
                 id: Date.now(),
                 username: currentUser.username,
                 message: message,
+                category: currentChatCategory,
                 timestamp: new Date().toISOString()
             };
 
             chatMessages.push(newMsg);
             saveAll();
-
-            chatChannel.postMessage({ type: 'new_message', message: newMsg });
+            chatChannel.postMessage({ type: 'new_message', message: newMsg, category: currentChatCategory });
             renderChatMessages();
             input.value = '';
         }
 
-        // ==================== BASIC UI ====================
-        function showSection(section) {
-            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            document.getElementById(section).classList.add('active');
+        // ==================== REGISTRATION WITH REFERRAL ====================
+        function showRegisterModal() {
+            document.getElementById('register-modal').classList.remove('hidden');
+            document.getElementById('register-modal').classList.add('flex');
+        }
+
+        function hideRegisterModal() {
+            document.getElementById('register-modal').classList.remove('flex');
+            document.getElementById('register-modal').classList.add('hidden');
+        }
+
+        function registerUser() {
+            const username = document.getElementById('reg-username').value.trim();
+            const referral = document.getElementById('reg-referral').value.trim();
+
+            if (!username) return alert("Username is required");
+
+            currentUser = {
+                id: Date.now(),
+                username: username,
+                points: 50,
+                wallet: 0,
+                referralCode: 'REF' + Date.now().toString().slice(-6),
+                referredBy: referral || null,
+                verifiedLevel: 1
+            };
+
+            // Give bonus points if used referral
+            if (referral) {
+                currentUser.points += 30;
+            }
+
+            saveAll();
+            hideRegisterModal();
+            updateUserNav();
+            alert("Account created successfully! Welcome to the community.");
         }
 
         function updateUserNav() {
             const container = document.getElementById('user-nav');
             if (!currentUser) {
                 container.innerHTML = `
-                    <button onclick="showLoginModal()" class="px-5 py-2 text-sm">Log in</button>
                     <button onclick="showRegisterModal()" class="bg-teal-700 text-white px-6 py-2 rounded-3xl text-sm font-medium">Join Free</button>
                 `;
             } else {
                 container.innerHTML = `
                     <div class="flex items-center gap-x-3">
-                        <div onclick="showSection('profile')" class="cursor-pointer">
+                        <div onclick="showSection('profile')" class="cursor-pointer text-right">
                             <div class="font-semibold">${currentUser.username}</div>
-                            <div class="text-xs text-teal-700">${currentUser.points || 0} pts</div>
+                            <div class="text-xs text-teal-700">${currentUser.points} pts</div>
                         </div>
                         <button onclick="logout()" class="text-red-500 text-sm">Logout</button>
                     </div>
@@ -200,14 +286,22 @@
             }
         }
 
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('gtf_user');
+            updateUserNav();
+            location.reload();
+        }
+
+        // ==================== INITIALIZATION ====================
         function init() {
             updateUserNav();
             initChat();
-            
-            // Demo data for forum if empty
+
+            // Demo threads
             if (threads.length === 0) {
                 threads = [
-                    { id: 1, title: "Best budget hotels in Tbilisi old town?", content: "Looking for clean places under $60.", category: "Hotels & Stays", author: "maria_travels", points: 142, approved: true, created_at: new Date().toISOString(), comment_count: 18 }
+                    { id: 1, title: "Best value hotels in Tbilisi old town 2026?", category: "Hotels & Stays", author: "maria_travels", points: 156, approved: true, created_at: new Date().toISOString() }
                 ];
                 saveAll();
             }
