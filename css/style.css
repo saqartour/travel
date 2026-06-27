@@ -1,0 +1,36 @@
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+.heading {
+  font-family: 'Playfair Display', Georgia, serif;
+}
+
+.section {
+  display: none;
+}
+
+.section.active {
+  display: block;
+}
+
+.nav-active {
+  color: #0f766e;
+  font-weight: 600;
+  border-bottom: 3px solid #0f766e;
+}
+
+.chat-message {
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
