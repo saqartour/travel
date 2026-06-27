@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Georgia Travel Forum • Sakartvelo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', system-ui, sans-serif; }
+        .heading { font-family: 'Playfair Display', Georgia, serif; }
+        .forum-card { transition: all 0.2s ease; }
+        .forum-card:hover { transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1); }
+        .nav-active { color: #0f766e; border-bottom: 3px solid #0f766e; font-weight: 600; }
+        .modal { animation: modalPop 0.2s ease forwards; }
+    </style>
+</head>
+<body class="bg-slate-50">
+
+    <!-- Navbar -->
+    <nav class="bg-white border-b sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-x-3">
+                <div class="w-9 h-9 bg-teal-700 rounded-2xl flex items-center justify-center">
+                    <i class="fa-solid fa-mountain text-white"></i>
+                </div>
+                <div>
+                    <span class="font-semibold text-2xl">Georgia Travel</span>
+                    <span class="text-teal-700 font-medium">Forum</span>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-x-2" id="nav-user">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-6 pt-8">
+
+        <!-- Header -->
+        <div class="flex justify-between items-end mb-8">
+            <div>
+                <h1 class="text-4xl font-semibold heading">Georgia Travel Forum</h1>
+                <p class="text-slate-600">Honest discussions for travelers in the Caucasus</p>
+            </div>
+            <button onclick="showCreateThreadModal()" 
+                    class="bg-teal-700 hover:bg-teal-800 text-white px-6 py-3 rounded-3xl flex items-center gap-x-2 font-medium">
+                <i class="fa-solid fa-plus"></i> 
+                <span>New Thread</span>
+            </button>
+        </div>
+
+        <!-- Categories -->
+        <div class="flex flex-wrap gap-2 mb-6" id="categories">
+            <!-- JS populated -->
+        </div>
+
+        <!-- Threads -->
+        <div class="bg-white rounded-3xl shadow border border-slate-200 overflow-hidden">
+            <div class="px-6 py-4 border-b flex items-center justify-between bg-slate-50">
+                <span class="font-semibold">Discussions</span>
+                <select id="sort" onchange="renderThreads()" class="text-sm border rounded-2xl px-3 py-1">
+                    <option value="newest">Newest</option>
+                    <option value="points">Most Points</option>
+                    <option value="comments">Most Comments</option>
+                </select>
+            </div>
+            <div id="threads-container" class="divide-y"></div>
+        </div>
+    </div>
+
+    <!-- Thread Modal -->
+    <div id="thread-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-[100]">
+        <div class="bg-white w-full max-w-3xl mx-4 rounded-3xl max-h-[92vh] flex flex-col">
+            <div class="p-8 border-b">
+                <div class="flex justify-between">
+                    <div id="modal-meta"></div>
+                    <button onclick="hideThreadModal()" class="text-3xl text-slate-400">×</button>
+                </div>
+                <h2 id="modal-title" class="text-3xl font-semibold mt-3"></h2>
+            </div>
+            
+            <div class="p-8 flex-1 overflow-auto" id="modal-content"></div>
+
+            <!-- Comments -->
+            <div class="border-t p-8 bg-slate-50">
+                <div class="font-semibold mb-4">Comments <span id="comment-count"></span></div>
+                <div id="comments-list" class="space-y-6 max-h-80 overflow-auto mb-6"></div>
+                
+                <div class="flex gap-3">
+                    <input id="comment-input" type="text" placeholder="Write a helpful reply..." 
+                           class="flex-1 border rounded-3xl px-5 py-3 text-sm">
+                    <button onclick="postComment()" class="bg-teal-700 text-white px-8 rounded-3xl font-medium">Reply</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Thread Modal -->
+    <div id="create-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-[100]">
+        <div class="bg-white w-full max-w-lg mx-4 rounded-3xl p-8">
+            <h3 class="text-2xl font-semibold mb-6">Create New Thread</h3>
+            
+            <div class="space-y-5">
+                <div>
+                    <label class="text-sm font-medium">Category</label>
+                    <select id="new-category" class="w-full mt-1 border rounded-2xl px-4 py-3">
+                        <option>General</option>
+                        <option>Hotels & Stays</option>
+                        <option>Car Rentals</option>
+                        <option>Experiences</option>
+                        <option>Travel Tips</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-sm font-medium">Title</label>
+                    <input id="new-title" type="text" class="w-full mt-1 border rounded-2xl px-4 py-3" placeholder="What do you want to discuss?">
+                </div>
+                <div>
+                    <label class="text-sm font-medium">Message</label>
+                    <textarea id="new-content" rows="5" class="w-full mt-1 border rounded-3xl px-4 py-3"></textarea>
+                </div>
+            </div>
+
+            <div class="flex gap-3 mt-8">
+                <button onclick="hideCreateModal()" class="flex-1 py-3 border rounded-3xl">Cancel</button>
+                <button onclick="createNewThread()" class="flex-1 py-3 bg-teal-700 text-white rounded-3xl font-medium">Submit for Approval</button>
+            </div>
+            <p class="text-center text-xs text-slate-500 mt-4">All threads are reviewed by admins before going live.</p>
+        </div>
+    </div>
+
+    <script>
+        // ==================== DATA (localStorage) ====================
+        let currentUser = JSON.parse(localStorage.getItem('gtf_user')) || null;
+        let threads = JSON.parse(localStorage.getItem('gtf_threads')) || [];
+        let comments = JSON.parse(localStorage.getItem('gtf_comments')) || [];
+
+        function saveData() {
+            localStorage.setItem('gtf_user', JSON.stringify(currentUser));
+            localStorage.setItem('gtf_threads', JSON.stringify(threads));
+            localStorage.setItem('gtf_comments', JSON.stringify(comments));
+        }
+
+        // Demo data
+        if (threads.length === 0) {
+            threads = [
+                { id: 1, title: "Best value hotels in Tbilisi old town?", content: "Looking for clean and central places under $60.", category: "Hotels & Stays", author: "maria_travels", points: 142, approved: true, created_at: "2026-01-20", comment_count: 24 },
+                { id: 2, title: "Car rental for Svaneti – 4x4 needed?", content: "Planning to drive to Ushguli. Is a regular car enough?", category: "Car Rentals", author: "caucasus_explorer", points: 98, approved: true, created_at: "2026-01-19", comment_count: 31 }
+            ];
+            saveData();
+        }
+
+        // ==================== RENDER ====================
+        function updateNav() {
+            const nav = document.getElementById('nav-user');
+            if (!currentUser) {
+                nav.innerHTML = `
+                    <button onclick="showLogin()" class="px-5 py-2 text-sm">Log in</button>
+                    <button onclick="showRegister()" class="bg-teal-700 text-white px-6 py-2 rounded-3xl text-sm font-medium">Join Free</button>
+                `;
+            } else {
+                nav.innerHTML = `
+                    <div class="flex items-center gap-x-4">
+                        <div onclick="showProfile()" class="cursor-pointer flex items-center gap-x-2">
+                            <div class="text-right">
+                                <div class="font-semibold">${currentUser.username}</div>
+                                <div class="text-xs text-teal-700">${currentUser.points} points</div>
+                            </div>
+                            <div class="w-9 h-9 bg-teal-100 rounded-2xl flex items-center justify-center"><i class="fa-solid fa-user text-teal-700"></i></div>
+                        </div>
+                        <button onclick="logout()" class="text-red-500 text-sm">Logout</button>
+                    </div>
+                `;
+            }
+        }
+
+        function renderCategories() {
+            const container = document.getElementById('categories');
+            const cats = ['All', 'Hotels & Stays', 'Car Rentals', 'Experiences', 'Travel Tips', 'General'];
+            container.innerHTML = cats.map(cat => 
+                `<button onclick="filterCategory('${cat}')" class="px-5 py-2 text-sm rounded-3xl border hover:bg-white ${cat === 'All' ? 'bg-teal-700 text-white border-teal-700' : 'bg-white'}">${cat}</button>`
+            ).join('');
+        }
+
+        let currentCategory = 'All';
+
+        function filterCategory(cat) {
+            currentCategory = cat;
+            renderThreads();
+        }
+
+        function renderThreads() {
+            const container = document.getElementById('threads-container');
+            let data = threads.filter(t => t.approved);
+
+            if (currentCategory !== 'All') {
+                data = data.filter(t => t.category === currentCategory);
+            }
+
+            const sort = document.getElementById('sort').value;
+            if (sort === 'newest') data.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+            if (sort === 'points') data.sort((a,b) => b.points - a.points);
+            if (sort === 'comments') data.sort((a,b) => (b.comment_count || 0) - (a.comment_count || 0));
+
+            container.innerHTML = data.map(thread => `
+                <div onclick="showThread(${thread.id})" class="px-6 py-5 hover:bg-slate-50 cursor-pointer flex gap-4">
+                    <div class="flex-1">
+                        <div class="flex items-center gap-x-2 mb-1">
+                            <span class="text-xs bg-teal-100 text-teal-700 px-3 py-0.5 rounded-2xl">${thread.category}</span>
+                            <span class="text-xs text-slate-500">by ${thread.author}</span>
+                        </div>
+                        <div class="font-semibold text-lg">${thread.title}</div>
+                        <div class="flex gap-x-5 text-sm text-slate-500 mt-2">
+                            <span><i class="fa-regular fa-comment mr-1"></i> ${thread.comment_count || 0}</span>
+                            <span><i class="fa-solid fa-arrow-trend-up mr-1"></i> ${thread.points} points</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ==================== THREAD & COMMENTS ====================
+        let currentThread = null;
+
+        function showThread(id) {
+            currentThread = threads.find(t => t.id === id);
+            if (!currentThread) return;
+
+            document.getElementById('modal-title').textContent = currentThread.title;
+            document.getElementById('modal-content').innerHTML = `<p class="text-slate-700">${currentThread.content}</p>`;
+            document.getElementById('modal-meta').innerHTML = `
+                <span class="px-3 py-1 text-xs bg-teal-100 text-teal-700 rounded-2xl">${currentThread.category}</span>
+                <span class="ml-3 text-sm text-slate-500">by <strong>${currentThread.author}</strong></span>
+            `;
+
+            renderComments();
+            document.getElementById('thread-modal').classList.remove('hidden');
+            document.getElementById('thread-modal').classList.add('flex');
+        }
+
+        function hideThreadModal() {
+            document.getElementById('thread-modal').classList.remove('flex');
+            document.getElementById('thread-modal').classList.add('hidden');
+        }
+
+        function renderComments() {
+            const container = document.getElementById('comments-list');
+            const threadComments = comments.filter(c => c.thread_id === currentThread.id);
+            document.getElementById('comment-count').textContent = `(${threadComments.length})`;
+
+            container.innerHTML = threadComments.length > 0 ? 
+                threadComments.map(c => `
+                    <div>
+                        <div class="font-semibold text-sm">${c.author} <span class="text-xs text-slate-400 ml-2">${new Date(c.created_at).toLocaleDateString()}</span></div>
+                        <p class="text-sm mt-1">${c.content}</p>
+                    </div>
+                `).join('') : `<p class="text-sm text-slate-500">No comments yet.</p>`;
+        }
+
+        function postComment() {
+            if (!currentUser) { alert("Please log in first"); return; }
+            const input = document.getElementById('comment-input');
+            if (!input.value.trim()) return;
+
+            comments.push({
+                id: Date.now(),
+                thread_id: currentThread.id,
+                content: input.value.trim(),
+                author: currentUser.username,
+                created_at: new Date().toISOString()
+            });
+
+            currentThread.comment_count = (currentThread.comment_count || 0) + 1;
+            currentUser.points = (currentUser.points || 0) + 5; // Earn points for commenting
+
+            saveData();
+            input.value = '';
+            renderComments();
+            renderThreads();
+            updateNav();
+        }
+
+        // ==================== CREATE THREAD ====================
+        function showCreateThreadModal() {
+            if (!currentUser) { alert("Please log in to post"); return; }
+            document.getElementById('create-modal').classList.remove('hidden');
+            document.getElementById('create-modal').classList.add('flex');
+        }
+
+        function hideCreateModal() {
+            document.getElementById('create-modal').classList.remove('flex');
+            document.getElementById('create-modal').classList.add('hidden');
+        }
+
+        function createNewThread() {
+            const title = document.getElementById('new-title').value.trim();
+            const content = document.getElementById('new-content').value.trim();
+            const category = document.getElementById('new-category').value;
+
+            if (!title || !content) return alert("Please fill title and content");
+
+            const newThread = {
+                id: Date.now(),
+                title, content, category,
+                author: currentUser.username,
+                points: 10,
+                approved: false,
+                created_at: new Date().toISOString(),
+                comment_count: 0
+            };
+
+            threads.unshift(newThread);
+            saveData();
+            hideCreateModal();
+            renderThreads();
+            alert("Thread submitted! It will appear after admin approval.");
+        }
+
+        // ==================== AUTH ====================
+        function showRegister() {
+            const username = prompt("Choose username:");
+            if (!username) return;
+            currentUser = { id: Date.now(), username, points: 50, wallet: 0, verified: false };
+            saveData();
+            updateNav();
+            alert("Account created! (Email verification simulated)");
+        }
+
+        function showLogin() {
+            const username = prompt("Enter username:");
+            if (!username) return;
+            currentUser = { id: Date.now(), username, points: 120, wallet: 0, verified: true };
+            saveData();
+            updateNav();
+        }
+
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('gtf_user');
+            updateNav();
+        }
+
+        function showProfile() {
+            if (!currentUser) return;
+            alert(`Username: ${currentUser.username}\nPoints: ${currentUser.points}\nWallet: $${currentUser.wallet || 0}`);
+        }
+
+        // ==================== INIT ====================
+        function init() {
+            updateNav();
+            renderCategories();
+            renderThreads();
+
+            // Search
+            const search = document.createElement('input');
+            search.placeholder = "Search threads...";
+            search.className = "border rounded-3xl px-4 py-2 text-sm w-72 ml-auto";
+            search.oninput = () => {
+                const term = search.value.toLowerCase();
+                const filtered = threads.filter(t => t.title.toLowerCase().includes(term));
+                // simple re-render
+                const container = document.getElementById('threads-container');
+                container.innerHTML = filtered.map(t => `<div onclick="showThread(${t.id})" class="px-6 py-5 cursor-pointer">${t.title}</div>`).join('');
+            };
+            document.querySelector('#categories').after(search);
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
