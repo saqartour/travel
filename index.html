@@ -8,69 +8,110 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         :root {
-            color-scheme: light;
-            --bg: #f7efe6;
-            --surface: #ffffff;
-            --surface-soft: #f8ede3;
-            --text: #22312f;
-            --muted: #7d6b5f;
-            --primary: #0f766e;
-            --primary-soft: #daf0ed;
-            --accent: #b1815a;
-            --border: #e6d5c5;
+            color-scheme: dark;
+            --bg: #020817;
+            --surface: rgba(8,18,33,0.92);
+            --surface-soft: rgba(13,26,46,0.95);
+            --text: #e2f6ff;
+            --muted: #7a9bb6;
+            --primary: #5eead4;
+            --primary-soft: rgba(94,234,212,0.18);
+            --accent: #8b5cf6;
+            --accent-soft: rgba(139,92,246,0.16);
+            --border: rgba(94,234,212,0.18);
+            --glow: rgba(94,234,212,0.16);
+        }
+
+        html {
+            scroll-behavior: smooth;
         }
 
         body {
+            min-height: 100vh;
+            margin: 0;
             font-family: 'Inter', system-ui, sans-serif;
+            background: radial-gradient(circle at top left, rgba(94,234,212,0.14), transparent 18%),
+                        radial-gradient(circle at bottom right, rgba(139,92,246,0.12), transparent 16%),
+                        linear-gradient(180deg, #020817 0%, #05121f 42%, #08182c 100%);
             color: var(--text);
-            background: radial-gradient(circle at top right, rgba(15,118,110,0.12), transparent 25%), var(--bg);
+            overflow-x: hidden;
         }
 
-        .heading { font-family: 'Playfair Display', Georgia, serif; }
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at 20% 10%, rgba(94,234,212,0.07), transparent 16%),
+                        radial-gradient(circle at 80% 15%, rgba(139,92,246,0.08), transparent 14%),
+                        linear-gradient(90deg, rgba(255,255,255,0.02), transparent 85%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .heading { font-family: 'Space Grotesk', system-ui, sans-serif; letter-spacing: -0.02em; }
 
         .section { display: none; padding-bottom: 4rem; }
         .section.active { display: block; }
+
+        .glass-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 2rem;
+            box-shadow: 0 32px 80px rgba(0,0,0,0.28);
+            backdrop-filter: blur(18px);
+        }
 
         .card {
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: 2rem;
-            box-shadow: 0 18px 40px rgba(15,118,110,0.08);
+            box-shadow: 0 30px 70px rgba(0,0,0,0.2);
         }
 
         .btn-pill {
             border-radius: 9999px;
-            transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+            border: 1px solid rgba(94,234,212,0.25);
+            background: rgba(94,234,212,0.08);
+            color: var(--text);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
         }
 
         .btn-pill:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 14px 30px rgba(15,118,110,0.12);
+            transform: translateY(-2px);
+            background: rgba(94,234,212,0.16);
+            box-shadow: 0 0 40px rgba(94,234,212,0.18);
+            border-color: rgba(94,234,212,0.45);
         }
 
         .thread-card {
             padding: 1.75rem;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+            border: 1px solid rgba(94,234,212,0.08);
+            background: rgba(10,22,40,0.9);
         }
 
         .thread-card:hover {
             transform: translateY(-2px);
-            box-shadow: 0 14px 30px rgba(15,118,110,0.08);
+            box-shadow: 0 26px 54px rgba(0,0,0,0.28);
+            border-color: rgba(94,234,212,0.18);
         }
 
         .chat-pill {
-            transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+            border: 1px solid rgba(94,234,212,0.12);
+            background: rgba(255,255,255,0.04);
+            color: var(--text);
         }
 
         .chat-pill:hover {
             transform: translateY(-1px);
-            box-shadow: 0 10px 20px rgba(15,118,110,0.1);
+            box-shadow: 0 16px 36px rgba(94,234,212,0.08);
         }
 
         .chat-pill.active,
         .chat-pill.active:hover {
-            background: var(--primary);
-            color: white;
+            background: rgba(94,234,212,0.18);
+            color: var(--text);
             border-color: transparent;
         }
 
@@ -84,36 +125,66 @@
             border-radius: 9999px;
             font-size: 0.75rem;
             font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
         }
 
-        .status-pending { background: #fff4e1; color: #986a24; }
-        .status-approved { background: #def7ec; color: #166534; }
-        .status-rejected { background: #fee2e2; color: #991b1b; }
+        .status-pending { background: rgba(248,205,141,0.12); color: #f8c56b; }
+        .status-approved { background: rgba(110,231,183,0.14); color: #7ee7a6; }
+        .status-rejected { background: rgba(248,113,113,0.12); color: #f87171; }
+
+        .section h1, .section h2, .section h3 {
+            letter-spacing: -0.02em;
+        }
+
+        .hero-panel {
+            padding: 2rem;
+            border-radius: 2rem;
+            border: 1px solid rgba(94,234,212,0.18);
+            background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
+            backdrop-filter: blur(20px);
+            box-shadow: 0 40px 90px rgba(0,0,0,0.22);
+        }
+
+        .hero-metric {
+            min-width: 12rem;
+            border-radius: 1.75rem;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            padding: 1.5rem;
+        }
+
+        .hero-metric strong {
+            display: block;
+            font-size: 1.75rem;
+            margin-top: 0.75rem;
+            color: var(--text);
+        }
 
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } }
     </style>
 </head>
-<body class="bg-[#f7efe6] text-slate-900">
+<body class="bg-[#020817] text-white">
 
     <!-- Navbar -->
-    <nav class="bg-white/95 backdrop-blur-md border-b border-[#e8d7c3] sticky top-0 z-50 shadow-sm">
+    <nav class="bg-[#020817]/80 backdrop-blur-xl border-b border-white/10 sticky top-0 z-50 shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
         <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between gap-4">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-teal-700 rounded-3xl flex items-center justify-center shadow-md">
-                    <i class="fa-solid fa-mountain text-white"></i>
+                <div class="w-10 h-10 bg-[#5eead4]/15 rounded-3xl flex items-center justify-center shadow-lg shadow-[#5eead4]/15">
+                    <i class="fa-solid fa-mountain-sun text-[#5eead4]"></i>
                 </div>
                 <div>
-                    <div class="font-semibold text-xl">Georgia Travel</div>
-                    <div class="text-sm text-slate-500">Forum & community hub</div>
+                    <div class="font-semibold text-xl text-white">Georgia Travel</div>
+                    <div class="text-xs uppercase tracking-[0.25em] text-[#7a9bb6]">Premium travel interface</div>
                 </div>
             </div>
 
             <div class="flex items-center gap-2 text-sm">
-                <button onclick="showSection('forum')" class="btn-pill nav-active px-5 py-2 text-slate-700" id="nav-forum">Forum</button>
-                <button onclick="showSection('live-chat')" class="btn-pill px-5 py-2 text-slate-700 hover:bg-[#daf0ed]" id="nav-live-chat">Live Chat</button>
-                <button onclick="showSection('wallet')" class="btn-pill px-5 py-2 text-slate-700 hover:bg-[#daf0ed]" id="nav-wallet">Wallet</button>
-                <button onclick="showSection('profile')" class="btn-pill px-5 py-2 text-slate-700 hover:bg-[#daf0ed]" id="nav-profile">Profile</button>
-                <button onclick="openAdminLogin()" class="btn-pill px-5 py-2 text-slate-700 hover:bg-[#daf0ed]" id="nav-admin">Admin</button>
+                <button onclick="showSection('forum')" class="btn-pill nav-active px-5 py-2 text-white/90" id="nav-forum">Forum</button>
+                <button onclick="showSection('live-chat')" class="btn-pill px-5 py-2 text-white/80">Live Chat</button>
+                <button onclick="showSection('wallet')" class="btn-pill px-5 py-2 text-white/80">Wallet</button>
+                <button onclick="showSection('profile')" class="btn-pill px-5 py-2 text-white/80">Profile</button>
+                <button onclick="openAdminLogin()" class="btn-pill px-5 py-2 text-white/80">Admin</button>
             </div>
 
             <div id="user-nav"></div>
@@ -122,34 +193,65 @@
 
     <!-- FORUM SECTION -->
     <div id="forum" class="section active max-w-7xl mx-auto px-6 pt-10">
-        <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between mb-10">
+        <div class="glass-card hero-panel grid gap-6 lg:grid-cols-[1.7fr_1fr] p-8">
             <div>
-                <h1 class="text-4xl font-semibold heading">Community Discussions</h1>
-                <p class="text-slate-600 mt-1 max-w-2xl">Share travel tips, ask about the best stays, and connect with other Georgia explorers.</p>
+                <p class="text-xs uppercase tracking-[0.3em] text-[#5eead4]/80">Georgia Travel AI Hub</p>
+                <h1 class="text-5xl font-semibold">Future-ready travel community for expert visitors.</h1>
+                <p class="text-slate-300 mt-4 max-w-2xl">Join verified discussions, discover premium tips, and earn rewards instantly with referrals.</p>
+                <div class="mt-8 flex flex-wrap gap-3">
+                    <button onclick="showCreateThreadModal()" class="btn-pill bg-gradient-to-r from-[#5eead4] to-[#8b5cf6] text-slate-950 px-6 py-3 font-semibold shadow-lg">Start a thread</button>
+                    <button onclick="showLoginModal()" class="btn-pill text-white border border-white/15 bg-white/5 px-6 py-3">Quick login</button>
+                    <button onclick="openRegisterModal()" class="btn-pill text-white border border-[#5eead4]/30 bg-[#5eead4]/10 px-6 py-3">Create account</button>
+                </div>
             </div>
-            <div class="flex flex-col sm:flex-row gap-3">
-                <button onclick="showCreateThreadModal()" class="bg-teal-700 hover:bg-teal-800 transition px-7 py-3 rounded-3xl text-white font-medium flex items-center gap-x-3">
-                    <i class="fa-solid fa-plus"></i><span>New Thread</span>
-                </button>
-                <button onclick="showLoginModal()" class="border border-[#e6d5c5] bg-white px-7 py-3 rounded-3xl text-slate-700 hover:shadow-md">Login</button>
+            <div class="grid grid-cols-1 gap-4">
+                <div class="hero-metric">
+                    <span class="text-xs uppercase text-[#7a9bb6]">Active explorers</span>
+                    <strong>1,280+</strong>
+                    <p class="text-sm text-slate-400 mt-2">Realtime engagement across Georgia regions.</p>
+                </div>
+                <div class="hero-metric">
+                    <span class="text-xs uppercase text-[#7a9bb6]">Referral bonus</span>
+                    <strong>+30 pts</strong>
+                    <p class="text-sm text-slate-400 mt-2">Boost your score when friends join with your code.</p>
+                </div>
+                <div class="hero-metric">
+                    <span class="text-xs uppercase text-[#7a9bb6]">Verified threads</span>
+                    <strong>312</strong>
+                    <p class="text-sm text-slate-400 mt-2">Curated expert discussions for smart travelers.</p>
+                </div>
             </div>
         </div>
 
-        <div class="card overflow-hidden">
-            <div class="px-6 py-5 bg-[#f8efe2] border-b border-[#e6d5c5] flex items-center justify-between gap-3">
-                <div>
-                    <span class="font-semibold text-slate-800">All Threads</span>
-                    <p class="text-sm text-slate-500 mt-1">Approved community discussions are shown here.</p>
+        <div class="mt-10 grid gap-6 lg:grid-cols-[1.5fr_0.9fr]">
+            <div class="glass-card overflow-hidden">
+                <div class="px-6 py-5 border-b border-white/10 flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-center">
+                    <div>
+                        <div class="text-sm uppercase tracking-[0.2em] text-[#5eead4]/70">Active Community</div>
+                        <h2 class="text-2xl font-semibold mt-2">Approved threads and expert travel tips</h2>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="showCreateThreadModal()" class="btn-pill bg-[#5eead4]/12 text-[#5eead4] px-4 py-2">New thread</button>
+                        <button onclick="showLoginModal()" class="btn-pill border border-white/10 bg-white/5 px-4 py-2 text-white">Login</button>
+                    </div>
                 </div>
-                <div class="flex items-center gap-3">
-                    <select id="sort-threads" onchange="renderThreads()" class="text-sm border border-[#e6d5c5] rounded-full px-4 py-2 bg-white">
-                        <option value="newest">Newest</option>
-                        <option value="points">Highest Points</option>
-                        <option value="comments">Most Comments</option>
-                    </select>
-                </div>
+                <div id="threads-list" class="divide-y divide-white/10"></div>
             </div>
-            <div id="threads-list" class="divide-y"></div>
+            <div class="glass-card p-6">
+                <div class="text-xs uppercase tracking-[0.3em] text-[#7a9bb6]">Experience path</div>
+                <h3 class="text-2xl font-semibold mt-3">Simplified visitor flow</h3>
+                <ol class="mt-6 space-y-4 text-slate-300">
+                    <li class="rounded-3xl border border-white/10 bg-white/5 p-5">
+                        <strong>1</strong> Register or login with one click.
+                    </li>
+                    <li class="rounded-3xl border border-white/10 bg-white/5 p-5">
+                        <strong>2</strong> Start an expert thread or join live regional chat.
+                    </li>
+                    <li class="rounded-3xl border border-white/10 bg-white/5 p-5">
+                        <strong>3</strong> Earn points and redeem once verified.
+                    </li>
+                </ol>
+            </div>
         </div>
     </div>
 
@@ -158,23 +260,23 @@
         <div class="flex justify-between items-center mb-6 gap-4">
             <div>
                 <h2 class="text-3xl font-semibold">Live Regional Chat</h2>
-                <p class="text-slate-600 mt-1">Real-time chat organized by destination region.</p>
+                <p class="text-[#a0b9da] mt-1">Realtime chat arranged by destination region.</p>
             </div>
-            <div class="flex items-center gap-2 text-sm text-slate-500">
-                <span class="inline-flex items-center gap-2 rounded-full bg-[#daf0ed] px-3 py-2">Live <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span></span>
+            <div class="flex items-center gap-2 text-sm text-[#7a9bb6]">
+                <span class="inline-flex items-center gap-2 rounded-full border border-[#5eead4]/25 bg-[#5eead4]/12 px-3 py-2 text-[#d0f9ed]">Live <span class="w-2 h-2 rounded-full bg-[#5eead4] animate-pulse"></span></span>
             </div>
         </div>
 
         <!-- Chat Category Tabs -->
         <div class="flex flex-wrap gap-2 mb-4" id="chat-categories"></div>
 
-        <div class="bg-white rounded-3xl shadow border flex flex-col h-[620px]">
-            <div id="chat-messages" class="flex-1 p-6 overflow-y-auto space-y-4 bg-[#f9f4ee]"></div>
+        <div class="glass-card rounded-[2rem] border-white/10 flex flex-col h-[620px]">
+            <div id="chat-messages" class="flex-1 p-6 overflow-y-auto space-y-4 bg-[#071422]/95"></div>
 
-            <div class="p-4 border-t bg-white rounded-b-3xl">
+            <div class="p-4 border-t border-white/10 bg-[#071422]/95 rounded-b-[2rem]">
                 <div class="flex gap-3">
-                    <input id="chat-input" type="text" placeholder="Type your message..." class="flex-1 border border-[#e6d5c5] rounded-full px-5 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-teal-200" onkeypress="if (event.key === 'Enter') sendChatMessage()">
-                    <button onclick="sendChatMessage()" class="bg-teal-700 text-white px-8 rounded-full font-medium">Send</button>
+                    <input id="chat-input" type="text" placeholder="Type your message..." class="flex-1 border border-white/10 rounded-full px-5 py-3 text-sm bg-[#08182b]/90 text-white placeholder:text-[#6a8aa7] focus:outline-none focus:ring-2 focus:ring-[#5eead4]/30" onkeypress="if (event.key === 'Enter') sendChatMessage()">
+                    <button onclick="sendChatMessage()" class="btn-pill bg-[#5eead4] text-slate-950 px-8 rounded-full font-medium">Send</button>
                 </div>
             </div>
         </div>
@@ -185,64 +287,64 @@
         <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between mb-8">
             <div>
                 <h2 class="text-3xl font-semibold">Wallet & Rewards</h2>
-                <p class="text-slate-600 mt-1">Manage your travel funds, points, and redemption status.</p>
+                <p class="text-[#a0b9da] mt-1">Manage your travel funds, points, and redemption status.</p>
             </div>
             <span class="status-pill status-approved">Level 2 verification required for redemption</span>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div class="card p-8">
-                <div class="text-sm text-slate-500">Wallet Balance</div>
+            <div class="glass-card p-8">
+                <div class="text-sm text-[#7a9bb6]">Wallet Balance</div>
                 <div class="text-5xl font-semibold mt-3">$<span id="wallet-balance">0.00</span></div>
             </div>
-            <div class="card p-8">
-                <div class="text-sm text-slate-500">Total Points</div>
-                <div class="text-5xl font-semibold mt-3 text-teal-700"><span id="points-balance">0</span> pts</div>
+            <div class="glass-card p-8">
+                <div class="text-sm text-[#7a9bb6]">Total Points</div>
+                <div class="text-5xl font-semibold mt-3 text-[#5eead4]"><span id="points-balance">0</span> pts</div>
             </div>
-            <div class="card p-8">
-                <div class="text-sm text-slate-500">Verification Level</div>
+            <div class="glass-card p-8">
+                <div class="text-sm text-[#7a9bb6]">Verification Level</div>
                 <div class="text-5xl font-semibold mt-3" id="verification-level">1</div>
-                <button onclick="requestVerification()" class="mt-5 w-full bg-[#b1815a] text-white rounded-3xl py-3 hover:bg-[#8c6244] transition">Request Level 2</button>
+                <button onclick="requestVerification()" class="mt-5 w-full bg-[#5eead4] text-slate-950 rounded-full py-3 hover:bg-[#44c4b8] transition">Request Level 2</button>
             </div>
         </div>
 
-        <div class="card p-8 mt-6">
+        <div class="glass-card p-8 mt-6">
             <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                 <div>
                     <h3 class="text-xl font-semibold">Crypto Top-Up</h3>
-                    <p class="text-sm text-slate-500 mt-2">Add balance instantly with supported crypto options.</p>
+                    <p class="text-[#a0b9da] mt-2">Add balance instantly with supported crypto options.</p>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full lg:w-auto">
-                    <input id="topup-amount" type="number" value="50" min="1" class="border border-[#e6d5c5] rounded-3xl px-4 py-3 w-full" placeholder="Amount">
-                    <select id="crypto-type" class="border border-[#e6d5c5] rounded-3xl px-4 py-3 w-full">
+                    <input id="topup-amount" type="number" value="50" min="1" class="border border-white/10 rounded-full px-4 py-3 w-full bg-[#071422]/90 text-white placeholder:text-[#6a8aa7]" placeholder="Amount">
+                    <select id="crypto-type" class="border border-white/10 rounded-full px-4 py-3 w-full bg-[#071422]/90 text-white">
                         <option value="USDT">USDT (TRC20)</option>
                         <option value="BTC">Bitcoin</option>
                         <option value="ETH">Ethereum</option>
                     </select>
-                    <button onclick="topUpWallet()" class="bg-teal-700 text-white rounded-3xl px-6 py-3">Top Up</button>
+                    <button onclick="topUpWallet()" class="btn-pill bg-[#5eead4] text-slate-950 rounded-full px-6 py-3">Top Up</button>
                 </div>
             </div>
         </div>
 
-        <div class="card p-8 mt-6">
+        <div class="glass-card p-8 mt-6">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div>
                     <h3 class="text-xl font-semibold">Redemption</h3>
-                    <p class="text-slate-600 mt-2">Redeem wallet funds when your account has Level 2 verification.</p>
+                    <p class="text-[#a0b9da] mt-2">Redeem wallet funds when your account has Level 2 verification.</p>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <input id="redeem-amount" type="number" min="1" class="border border-[#e6d5c5] rounded-3xl px-4 py-3" placeholder="USD amount">
-                    <button onclick="redeemFunds()" class="bg-[#b1815a] text-white rounded-3xl px-6 py-3">Redeem</button>
+                    <input id="redeem-amount" type="number" min="1" class="border border-white/10 rounded-full px-4 py-3 bg-[#071422]/90 text-white placeholder:text-[#6a8aa7]" placeholder="USD amount">
+                    <button onclick="redeemFunds()" class="btn-pill bg-[#5eead4] text-slate-950 rounded-full px-6 py-3">Redeem</button>
                 </div>
             </div>
-            <p class="text-sm text-slate-500 mt-4">Redemptions require Level 2 verification and a positive wallet balance.</p>
+            <p class="text-sm text-[#7a9bb6] mt-4">Redemptions require Level 2 verification and a positive wallet balance.</p>
         </div>
     </div>
 
     <!-- PROFILE SECTION -->
     <div id="profile" class="section max-w-4xl mx-auto px-6 pt-8">
         <h2 class="text-3xl font-semibold mb-6">Your Profile</h2>
-        <div id="profile-content" class="card bg-white rounded-3xl p-8 shadow border"></div>
+        <div id="profile-content" class="glass-card p-8"></div>
     </div>
 
     <!-- ADMIN SECTION -->
@@ -250,71 +352,71 @@
         <div class="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between mb-8">
             <div>
                 <h2 class="text-3xl font-semibold">Admin Panel</h2>
-                <p class="text-slate-600 mt-1">Approve or reject forum threads and monitor community activity.</p>
+                <p class="text-[#a0b9da] mt-1">Approve or reject forum threads and monitor community activity.</p>
             </div>
-            <button onclick="adminLogout()" class="bg-red-500 text-white rounded-3xl px-6 py-3">Logout Admin</button>
+            <button onclick="adminLogout()" class="btn-pill bg-[#f87171]/10 border border-white/10 text-[#ffebe4] rounded-full px-6 py-3">Logout Admin</button>
         </div>
-        <div class="card p-8">
+        <div class="glass-card p-8">
             <h3 class="text-xl font-semibold mb-4">Pending Threads</h3>
             <div id="admin-pending" class="space-y-4"></div>
-            <div id="admin-empty" class="text-slate-500 mt-4"></div>
+            <div id="admin-empty" class="text-[#7a9bb6] mt-4"></div>
         </div>
     </div>
 
     <!-- Modals -->
-    <div id="register-modal" class="hidden fixed inset-0 bg-black/55 items-center justify-center z-[100] p-4">
-        <div class="bg-white w-full max-w-md mx-auto rounded-3xl p-8 shadow-xl">
+    <div id="register-modal" class="hidden fixed inset-0 bg-black/70 items-center justify-center z-[100] p-4">
+        <div class="glass-card w-full max-w-md mx-auto rounded-[2rem] p-8 shadow-[0_30px_80px_rgba(0,0,0,0.4)]">
             <div class="flex items-center justify-between mb-6">
                 <div>
                     <h3 class="text-2xl font-semibold">Create Account</h3>
-                    <p class="text-slate-500 text-sm mt-1">Referral code rewards both users instantly.</p>
+                    <p class="text-[#a0b9da] text-sm mt-1">Referral code rewards both users instantly.</p>
                 </div>
-                <button onclick="hideRegisterModal()" class="text-slate-500 text-xl">✕</button>
+                <button onclick="hideRegisterModal()" class="text-[#7a9bb6] text-xl">✕</button>
             </div>
             <div class="space-y-4">
-                <input id="reg-username" type="text" placeholder="Choose a username" class="w-full border border-[#e6d5c5] rounded-3xl px-4 py-3">
-                <input id="reg-referral" type="text" placeholder="Referral code (optional)" class="w-full border border-[#e6d5c5] rounded-3xl px-4 py-3">
+                <input id="reg-username" type="text" placeholder="Choose a username" class="w-full border border-white/10 rounded-full bg-[#071422]/90 px-4 py-3 text-white placeholder:text-[#6a8aa7]">
+                <input id="reg-referral" type="text" placeholder="Referral code (optional)" class="w-full border border-white/10 rounded-full bg-[#071422]/90 px-4 py-3 text-white placeholder:text-[#6a8aa7]">
                 <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                    <button onclick="registerUser()" class="bg-teal-700 text-white rounded-3xl px-6 py-3">Create Account</button>
-                    <button onclick="showLoginModal()" class="border border-[#e6d5c5] rounded-3xl px-6 py-3 text-slate-700">Already have an account?</button>
+                    <button onclick="registerUser()" class="btn-pill bg-[#5eead4] text-slate-950 rounded-full px-6 py-3">Create Account</button>
+                    <button onclick="showLoginModal()" class="btn-pill border border-white/10 rounded-full px-6 py-3 text-[#a0b9da]">Already have an account?</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="login-modal" class="hidden fixed inset-0 bg-black/55 items-center justify-center z-[100] p-4">
-        <div class="bg-white w-full max-w-md mx-auto rounded-3xl p-8 shadow-xl">
+    <div id="login-modal" class="hidden fixed inset-0 bg-black/70 items-center justify-center z-[100] p-4">
+        <div class="glass-card w-full max-w-md mx-auto rounded-[2rem] p-8 shadow-[0_30px_80px_rgba(0,0,0,0.4)]">
             <div class="flex items-center justify-between mb-6">
                 <div>
                     <h3 class="text-2xl font-semibold">Login</h3>
-                    <p class="text-slate-500 text-sm mt-1">Sign in to access the forum and chat.</p>
+                    <p class="text-[#a0b9da] text-sm mt-1">Sign in to access the forum and chat.</p>
                 </div>
-                <button onclick="hideLoginModal()" class="text-slate-500 text-xl">✕</button>
+                <button onclick="hideLoginModal()" class="text-[#7a9bb6] text-xl">✕</button>
             </div>
             <div class="space-y-4">
-                <input id="login-username" type="text" placeholder="Username" class="w-full border border-[#e6d5c5] rounded-3xl px-4 py-3">
+                <input id="login-username" type="text" placeholder="Username" class="w-full border border-white/10 rounded-full bg-[#071422]/90 px-4 py-3 text-white placeholder:text-[#6a8aa7]">
                 <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                    <button onclick="loginUser()" class="bg-teal-700 text-white rounded-3xl px-6 py-3">Login</button>
-                    <button onclick="showRegisterModal()" class="border border-[#e6d5c5] rounded-3xl px-6 py-3 text-slate-700">Create account</button>
+                    <button onclick="loginUser()" class="btn-pill bg-[#5eead4] text-slate-950 rounded-full px-6 py-3">Login</button>
+                    <button onclick="showRegisterModal()" class="btn-pill border border-white/10 rounded-full px-6 py-3 text-[#a0b9da]">Create account</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="admin-login-modal" class="hidden fixed inset-0 bg-black/55 items-center justify-center z-[100] p-4">
-        <div class="bg-white w-full max-w-md mx-auto rounded-3xl p-8 shadow-xl">
+    <div id="admin-login-modal" class="hidden fixed inset-0 bg-black/85 items-center justify-center z-[100] p-4">
+        <div class="glass-card w-full max-w-md mx-auto rounded-[2rem] p-8 shadow-[0_40px_90px_rgba(0,0,0,0.5)]">
             <div class="flex items-center justify-between mb-6">
                 <div>
                     <h3 class="text-2xl font-semibold">Admin Login</h3>
-                    <p class="text-slate-500 text-sm mt-1">Enter the admin password to access thread approvals.</p>
+                    <p class="text-[#a0b9da] text-sm mt-1">Enter the admin password to access thread approvals.</p>
                 </div>
-                <button onclick="closeAdminLogin()" class="text-slate-500 text-xl">✕</button>
+                <button onclick="closeAdminLogin()" class="text-[#7a9bb6] text-xl">✕</button>
             </div>
             <div class="space-y-4">
-                <input id="admin-password" type="password" placeholder="Admin password" class="w-full border border-[#e6d5c5] rounded-3xl px-4 py-3">
+                <input id="admin-password" type="password" placeholder="Admin password" class="w-full border border-white/10 rounded-full bg-[#071422]/90 px-4 py-3 text-white placeholder:text-[#6a8aa7]">
                 <div class="flex gap-3">
-                    <button onclick="adminLogin()" class="bg-teal-700 text-white rounded-3xl px-6 py-3">Login</button>
-                    <button onclick="closeAdminLogin()" class="border border-[#e6d5c5] rounded-3xl px-6 py-3 text-slate-700">Cancel</button>
+                    <button onclick="adminLogin()" class="btn-pill bg-[#5eead4] text-slate-950 rounded-full px-6 py-3">Login</button>
+                    <button onclick="closeAdminLogin()" class="btn-pill border border-white/10 rounded-full px-6 py-3 text-[#a0b9da]">Cancel</button>
                 </div>
             </div>
         </div>
@@ -369,6 +471,10 @@
             hideLoginModal();
             document.getElementById('register-modal').classList.remove('hidden');
             document.getElementById('register-modal').classList.add('flex');
+        }
+
+        function showRegisterModal() {
+            openRegisterModal();
         }
 
         function hideRegisterModal() {
@@ -487,26 +593,26 @@
             }
 
             if (visibleThreads.length === 0) {
-                list.innerHTML = '<div class="p-8 text-slate-500">No approved threads yet. Submit the first one!</div>';
+                list.innerHTML = '<div class="p-8 text-[#7a9bb6]">No approved threads yet. Submit the first one!</div>';
                 return;
             }
 
             list.innerHTML = visibleThreads.map(thread => `
-                <div class="thread-card border-b border-[#f2e7dc]">
+                <div class="thread-card border-b border-white/10">
                     <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                         <div>
-                            <div class="text-xs uppercase tracking-[0.25em] text-[#a4866d]">${thread.category}</div>
-                            <h3 class="text-2xl font-semibold text-slate-900 mt-3">${thread.title}</h3>
-                            <p class="text-slate-600 mt-3">${thread.body || 'No description provided.'}</p>
+                            <div class="text-xs uppercase tracking-[0.25em] text-[#7a9bb6]">${thread.category}</div>
+                            <h3 class="text-2xl font-semibold text-white mt-3">${thread.title}</h3>
+                            <p class="text-[#a0b9da] mt-3">${thread.body || 'No description provided.'}</p>
                         </div>
-                        <div class="text-sm text-slate-500 text-right">
+                        <div class="text-sm text-[#7a9bb6] text-right">
                             <div>${thread.author}</div>
                             <div>${new Date(thread.created_at).toLocaleDateString()}</div>
                         </div>
                     </div>
-                    <div class="flex flex-wrap gap-3 mt-5 text-xs text-slate-500">
-                        <span class="rounded-full border px-3 py-1 bg-[#f5ede3]">${thread.points || 0} points</span>
-                        <span class="rounded-full border px-3 py-1 bg-[#f5ede3]">${thread.comment_count || 0} comments</span>
+                    <div class="flex flex-wrap gap-3 mt-5 text-xs text-[#7a9bb6]">
+                        <span class="rounded-full border border-white/10 bg-[#08182b]/90 px-3 py-1">${thread.points || 0} points</span>
+                        <span class="rounded-full border border-white/10 bg-[#08182b]/90 px-3 py-1">${thread.comment_count || 0} comments</span>
                     </div>
                 </div>
             `).join('');
@@ -557,7 +663,7 @@
             const container = document.getElementById('chat-categories');
             const categories = ['General','Tbilisi','Batumi','Mountains','Armenia','Azerbaijan'];
             container.innerHTML = categories.map(cat => `
-                <button onclick="switchChatCategory('${cat}')" class="chat-pill px-4 py-2 rounded-full border ${cat === currentChatCategory ? 'bg-teal-700 text-white border-transparent' : 'bg-white text-slate-700 border-[#e6d5c5]'}">${cat}</button>
+                <button onclick="switchChatCategory('${cat}')" class="chat-pill px-4 py-2 rounded-full ${cat === currentChatCategory ? 'bg-[#5eead4]/20 text-[#e2f6ff] border-transparent shadow-[0_0_30px_rgba(94,234,212,0.15)]' : 'bg-[#071422]/95 text-[#a0b9da] border border-white/10'}">${cat}</button>
             `).join('');
         }
 
@@ -579,8 +685,8 @@
                 const isMine = currentUser && msg.username === currentUser.username;
                 return `
                     <div class="flex ${isMine ? 'justify-end' : ''}">
-                        <div class="max-w-[75%] ${isMine ? 'bg-teal-700 text-white' : 'bg-white border border-[#e6d5c5]'} rounded-3xl px-5 py-4 chat-bubble">
-                            <div class="flex items-center justify-between gap-3 mb-2 text-xs ${isMine ? 'text-teal-100' : 'text-slate-500'}">
+                        <div class="max-w-[75%] ${isMine ? 'bg-[#5eead4]/90 text-slate-950' : 'bg-[#08182b]/95 border border-white/10 text-[#e2f6ff]'} rounded-[1.75rem] px-5 py-4 chat-bubble">
+                            <div class="flex items-center justify-between gap-3 mb-2 text-xs ${isMine ? 'text-[#0f172a]' : 'text-[#7a9bb6]'}">
                                 <span class="font-semibold">${msg.username}</span>
                                 <span>${new Date(msg.timestamp).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</span>
                             </div>
@@ -664,7 +770,7 @@
         function updateUserNav() {
             const container = document.getElementById('user-nav');
             if (!currentUser) {
-                container.innerHTML = `<button onclick="showLoginModal()" class="bg-teal-700 text-white px-6 py-2 rounded-3xl text-sm font-medium">Join Free</button>`;
+                container.innerHTML = `<button onclick="showLoginModal()" class="btn-pill bg-[#5eead4] text-slate-950 px-6 py-2 rounded-full text-sm font-medium">Join Free</button>`;
                 return;
             }
             const referralCount = getReferralCount();
@@ -694,21 +800,21 @@
             const pendingThreads = threads.filter(thread => thread.status === 'pending');
             if (!container) return;
             if (pendingThreads.length === 0) {
-                container.innerHTML = '<div class="text-slate-500">No pending threads at the moment.</div>';
+                container.innerHTML = '<div class="text-[#7a9bb6]">No pending threads at the moment.</div>';
                 return;
             }
             container.innerHTML = pendingThreads.map(thread => `
-                <div class="border border-[#e6d5c5] rounded-3xl p-6">
+                <div class="border border-white/10 rounded-[1.75rem] p-6 bg-[#071422]/90">
                     <div class="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-start">
                         <div>
-                            <div class="text-xs uppercase tracking-[0.2em] text-[#a4866d]">${thread.category}</div>
-                            <h3 class="text-xl font-semibold mt-3">${thread.title}</h3>
-                            <p class="text-slate-600 mt-3">${thread.body}</p>
-                            <p class="text-slate-500 text-sm mt-3">Submitted by ${thread.author} on ${new Date(thread.created_at).toLocaleDateString()}</p>
+                            <div class="text-xs uppercase tracking-[0.2em] text-[#7a9bb6]">${thread.category}</div>
+                            <h3 class="text-xl font-semibold mt-3 text-white">${thread.title}</h3>
+                            <p class="text-[#a0b9da] mt-3">${thread.body}</p>
+                            <p class="text-[#7a9bb6] text-sm mt-3">Submitted by ${thread.author} on ${new Date(thread.created_at).toLocaleDateString()}</p>
                         </div>
-                        <div class="flex gap-3">
-                            <button onclick="reviewThread(${thread.id}, 'approved')" class="bg-teal-700 text-white rounded-3xl px-5 py-3">Approve</button>
-                            <button onclick="reviewThread(${thread.id}, 'rejected')" class="bg-red-500 text-white rounded-3xl px-5 py-3">Reject</button>
+                        <div class="flex flex-wrap gap-3">
+                            <button onclick="reviewThread(${thread.id}, 'approved')" class="btn-pill bg-[#5eead4] text-slate-950 rounded-full px-5 py-3">Approve</button>
+                            <button onclick="reviewThread(${thread.id}, 'rejected')" class="btn-pill bg-[#f87171]/15 text-[#ffebe4] rounded-full px-5 py-3">Reject</button>
                         </div>
                     </div>
                 </div>
