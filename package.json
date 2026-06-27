@@ -1,0 +1,26 @@
+{
+  "name": "saqartour-travel",
+  "version": "3.0.0",
+  "description": "Saqartour Georgia Travel Hub — full-stack travel platform with admin CRM",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node --watch server/index.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "better-sqlite3": "^11.7.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "nodemailer": "^6.9.16",
+    "socket.io": "^4.8.1",
+    "stripe": "^17.5.0",
+    "uuid": "^11.0.3"
+  }
+}

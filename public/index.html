@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Saqartour — Global travel hub. 80+ countries, forums, live chat, tours & bookings.">
+  <title>Saqartour — Global Travel Hub 🌍</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/main.css">
+</head>
+<body data-theme="dark">
+
+<nav class="bg-[#020817]/80 backdrop-blur-xl border-b border-white/10 sticky top-0 z-50">
+  <div class="max-w-7xl mx-auto px-4 lg:px-6 h-16 flex items-center justify-between gap-2">
+    <div class="flex items-center gap-3 cursor-pointer" onclick="App.showSection('home')">
+      <span class="text-2xl">🌍</span>
+      <div>
+        <div class="font-semibold text-lg" data-i18n="siteName">Saqartour</div>
+        <div class="text-[10px] uppercase tracking-widest text-[#7a9bb6]" data-i18n="siteTagline">80+ Countries · Host & Traveler</div>
+      </div>
+    </div>
+    <button id="mobile-menu-btn" onclick="App.toggleMobileNav()" class="xl:hidden btn-pill px-3 py-2" aria-label="Menu"><i class="fa-solid fa-bars"></i></button>
+    <div id="desktop-nav" class="hidden xl:flex items-center gap-1 text-sm overflow-x-auto">
+      <button data-nav="home" onclick="App.showSection('home')" class="btn-pill nav-active px-3 py-2" data-i18n="navHome">🏠 Home</button>
+      <button id="nav-dashboard-btn" data-nav="dashboard" onclick="App.showSection('dashboard')" class="btn-pill px-3 py-2 hidden" data-i18n="navDashboard">📊 Dashboard</button>
+      <button data-nav="tours" onclick="App.showSection('tours')" class="btn-pill px-3 py-2" data-i18n="navTours">🗺️ Tours</button>
+      <button data-nav="forum" onclick="App.showSection('forum')" class="btn-pill px-3 py-2" data-i18n="navForum">💬 Forum</button>
+      <button data-nav="live-chat" onclick="App.showSection('live-chat')" class="btn-pill px-3 py-2" data-i18n="navLiveChat">⚡ Chat</button>
+      <button data-nav="faq" onclick="App.showSection('faq')" class="btn-pill px-3 py-2" data-i18n="navFaq">❓ FAQ</button>
+      <button data-nav="bookings" onclick="App.showSection('bookings')" class="btn-pill px-3 py-2" data-i18n="navBookings">🎫 Bookings</button>
+      <button data-nav="wallet" onclick="App.showSection('wallet')" class="btn-pill px-3 py-2" data-i18n="navWallet">💰 Wallet</button>
+      <button data-nav="host-panel" onclick="App.showSection('host-panel')" class="btn-pill px-3 py-2" data-i18n="navHosts">🏠 Hosts</button>
+      <button data-nav="profile" onclick="App.showSection('profile')" class="btn-pill px-3 py-2" data-i18n="navProfile">👤 Profile</button>
+      <a href="/admin" class="btn-pill px-3 py-2 text-[#8b5cf6]" data-i18n="navAdmin">🛡️ Admin</a>
+    </div>
+    <div class="flex items-center gap-2">
+      <button id="theme-toggle" onclick="App.toggleTheme()" class="btn-pill px-3 py-2"><i class="fa-solid fa-moon"></i></button>
+      <select id="language-select" onchange="SaqartourI18n.setLanguage(this.value)" class="custom-select rounded-full px-2 py-2 text-sm">
+        <option value="en">EN</option><option value="ka">KA</option><option value="ru">RU</option><option value="ar">AR</option>
+      </select>
+      <div id="user-nav"></div>
+    </div>
+  </div>
+</nav>
+
+<div id="mobile-nav" class="mobile-nav hidden xl:hidden">
+  <button onclick="App.showSection('home');App.toggleMobileNav(false)" data-i18n="navHome">🏠 Home</button>
+  <button id="nav-dashboard-mobile" onclick="App.showSection('dashboard');App.toggleMobileNav(false)" class="hidden" data-i18n="navDashboard">📊 Dashboard</button>
+  <button onclick="App.showSection('tours');App.toggleMobileNav(false)" data-i18n="navTours">🗺️ Tours</button>
+  <button onclick="App.showSection('forum');App.toggleMobileNav(false)" data-i18n="navForum">💬 Forum</button>
+  <button onclick="App.showSection('live-chat');App.toggleMobileNav(false)" data-i18n="navLiveChat">⚡ Chat</button>
+  <button onclick="App.showSection('faq');App.toggleMobileNav(false)" data-i18n="navFaq">❓ FAQ</button>
+  <button onclick="App.showSection('bookings');App.toggleMobileNav(false)" data-i18n="navBookings">🎫 Bookings</button>
+  <button onclick="App.showSection('wallet');App.toggleMobileNav(false)" data-i18n="navWallet">💰 Wallet</button>
+  <button onclick="App.showSection('host-panel');App.toggleMobileNav(false)" data-i18n="navHosts">🏠 Hosts</button>
+  <button onclick="App.showSection('profile');App.toggleMobileNav(false)" data-i18n="navProfile">👤 Profile</button>
+</div>
+
+<div id="verify-banner" class="hidden max-w-7xl mx-auto px-6 pt-3">
+  <div class="glass-card p-4 flex flex-wrap items-center justify-between gap-3 border border-amber-400/30">
+    <p class="text-amber-200 text-sm" data-i18n="verifyBanner">Verify your email to unlock all features.</p>
+    <button type="button" onclick="App.modal('verify-email-modal',true)" class="btn-pill bg-amber-400/20 text-amber-200 px-4 py-2 text-sm" data-i18n="verifyBannerBtn">Verify now</button>
+  </div>
+</div>
+
+<!-- HOME -->
+<section id="home" class="section active max-w-7xl mx-auto px-6 pt-10">
+  <div class="glass-card hero-panel grid gap-8 lg:grid-cols-[1.6fr_1fr] p-8">
+    <div>
+      <p class="text-xs uppercase tracking-[0.3em] text-[#5eead4]/80" data-i18n="heroBadge">✨ Saqartour Premium</p>
+      <h1 class="text-4xl lg:text-5xl font-bold mt-4" data-i18n="heroTitle">Explore the World — Book, Connect, Earn 🌏</h1>
+      <p class="text-[#a0b9da] mt-4 max-w-2xl" data-i18n="heroDesc">Join as a Traveler or Host. Forums in 80+ countries, live chat by city, premium tours, wallet & rewards.</p>
+      <div id="home-guest-actions" class="mt-8 flex flex-wrap gap-3">
+        <button onclick="App.modal('register-modal',true)" class="btn-pill bg-gradient-to-r from-[#5eead4] to-[#8b5cf6] text-slate-950 px-6 py-3 font-semibold" data-i18n="createAccount">✨ Create Account</button>
+        <button onclick="App.modal('login-modal',true)" class="btn-pill px-6 py-3" data-i18n="loginBtn">🔐 Login</button>
+        <button onclick="App.showSection('forum')" class="btn-pill px-6 py-3" data-i18n="exploreForums">💬 Explore Forums</button>
+        <button onclick="App.showSection('live-chat')" class="btn-pill px-6 py-3" data-i18n="liveChatBtn">⚡ Live Chat</button>
+      </div>
+      <div id="home-user-welcome" class="mt-8 hidden">
+        <p class="text-2xl font-semibold"><span data-i18n="welcomeBack">Welcome back</span>, <span id="home-welcome-name" class="text-[#5eead4]"></span>! 👋</p>
+        <div class="flex flex-wrap gap-3 mt-4">
+          <button onclick="App.showSection('dashboard')" class="btn-pill bg-[#5eead4] text-slate-950 px-6 py-3 font-semibold" data-i18n="exploreDashboard">My Dashboard</button>
+          <button onclick="App.showSection('forum')" class="btn-pill px-6 py-3" data-i18n="exploreForums">💬 Explore Forums</button>
+          <button onclick="App.showSection('live-chat')" class="btn-pill px-6 py-3" data-i18n="liveChatBtn">⚡ Live Chat</button>
+        </div>
+      </div>
+    </div>
+    <div class="grid gap-4">
+      <div class="hero-metric"><span class="text-xs text-[#7a9bb6]" data-i18n="metricCountries">Countries</span><strong>80+</strong><p class="text-sm text-[#7a9bb6] mt-2" data-i18n="metricCountriesDesc">Forums & chat worldwide</p></div>
+      <div class="hero-metric"><span class="text-xs text-[#7a9bb6]" data-i18n="metricHostTraveler">Host / Traveler</span><strong data-i18n="metricModes">2 modes</strong><p class="text-sm text-[#7a9bb6] mt-2" data-i18n="metricModesDesc">Register your way</p></div>
+      <div class="hero-metric"><span class="text-xs text-[#7a9bb6]" data-i18n="metricReferral">Referral</span><strong data-i18n="metricReferralPts">+30 pts</strong><p class="text-sm text-[#7a9bb6] mt-2" data-i18n="metricReferralDesc">Per friend invited</p></div>
+    </div>
+  </div>
+  <div class="grid sm:grid-cols-3 gap-4 mt-8">
+    <div class="glass-card p-6 text-center"><div class="text-3xl mb-2">🏨</div><h3 class="font-semibold" data-i18n="cardHotels">Hotels Forum</h3><p class="text-sm text-[#7a9bb6] mt-1" data-i18n="cardHotelsDesc">Find stays by city</p></div>
+    <div class="glass-card p-6 text-center"><div class="text-3xl mb-2">🚗</div><h3 class="font-semibold" data-i18n="cardCars">Car Rentals</h3><p class="text-sm text-[#7a9bb6] mt-1" data-i18n="cardCarsDesc">Tips & providers</p></div>
+    <div class="glass-card p-6 text-center"><div class="text-3xl mb-2">🗺️</div><h3 class="font-semibold" data-i18n="cardTours">Tours & Tips</h3><p class="text-sm text-[#7a9bb6] mt-1" data-i18n="cardToursDesc">Expert travel advice</p></div>
+  </div>
+</section>
+
+<!-- DASHBOARD (registered users) -->
+<section id="dashboard" class="section max-w-7xl mx-auto px-6 pt-10">
+  <h2 class="text-3xl font-bold" data-i18n="dashboardTitle">My Dashboard</h2>
+  <p class="text-[#a0b9da] mt-1 mb-6" data-i18n="dashboardDesc">Your travel hub — bookings, wallet, forum & chat</p>
+  <div id="dashboard-content" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"></div>
+</section>
+
+<!-- TOURS -->
+<section id="tours" class="section max-w-7xl mx-auto px-6 pt-10">
+  <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-4 mb-8">
+    <div><h2 class="text-3xl font-bold" data-i18n="toursTitle">Premium Tours</h2><p class="text-[#a0b9da] mt-1" data-i18n="toursDesc">Handpicked experiences with instant booking</p></div>
+    <div class="flex gap-3">
+      <input id="tour-search" type="text" data-i18n-placeholder="searchTours" placeholder="Search tours..." class="custom-select rounded-full px-4 py-3 border border-white/10">
+      <select id="tour-destination-filter" class="custom-select rounded-full px-4 py-3 border border-white/10"><option value="">All destinations</option></select>
+    </div>
+  </div>
+  <div id="tours-grid" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"></div>
+</section>
+
+<section id="destinations" class="section max-w-7xl mx-auto px-6 pt-10">
+  <h2 class="text-3xl font-bold mb-2">🌄 Destinations</h2>
+  <div id="destinations-grid" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"></div>
+</section>
+
+<!-- FORUM -->
+<section id="forum" class="section max-w-7xl mx-auto px-6 pt-10">
+  <div class="mb-6">
+    <h2 class="text-3xl font-bold">💬 Global Travel Forum</h2>
+    <p class="text-[#a0b9da] mt-1">Browse by country → city → topic</p>
+    <p id="forum-location-label" class="text-[#5eead4] text-sm mt-2 font-medium"></p>
+  </div>
+  <div class="glass-card p-4 mb-6">
+    <div class="grid sm:grid-cols-2 lg:grid-cols-5 gap-3">
+      <div><label class="text-xs text-[#7a9bb6]">🌍 Country</label><select id="forum-country" class="w-full custom-select rounded-full px-3 py-2 mt-1 text-sm"></select></div>
+      <div><label class="text-xs text-[#7a9bb6]">🏙️ City</label><select id="forum-city" class="w-full custom-select rounded-full px-3 py-2 mt-1 text-sm"></select></div>
+      <div><label class="text-xs text-[#7a9bb6]">📂 Topic</label><select id="forum-subcategory" class="w-full custom-select rounded-full px-3 py-2 mt-1 text-sm"></select></div>
+      <div><label class="text-xs text-[#7a9bb6]">↕️ Sort</label><select id="sort-threads" onchange="App.renderForum()" class="w-full custom-select rounded-full px-3 py-2 mt-1 text-sm"><option value="newest">Newest</option><option value="points">⭐ Points</option><option value="comments">💬 Comments</option></select></div>
+      <div class="flex items-end"><button onclick="App.openCreateThread()" class="btn-pill w-full bg-[#5eead4]/20 text-[#5eead4] py-2">➕ New Thread</button></div>
+    </div>
+  </div>
+  <div class="glass-card"><div id="threads-list" class="divide-y divide-white/10"></div></div>
+</section>
+
+<!-- LIVE CHAT -->
+<section id="live-chat" class="section max-w-6xl mx-auto px-6 pt-10">
+  <h2 class="text-3xl font-bold mb-1" data-i18n="liveChatTitle">⚡ Live Global Chat</h2>
+  <p id="chat-channel-label" class="text-[#5eead4] font-medium mb-4"></p>
+  <div id="chat-country-tabs" class="flex flex-wrap gap-2 mb-4"></div>
+  <div class="grid sm:grid-cols-2 gap-3 mb-4">
+    <select id="chat-country" class="custom-select rounded-full px-4 py-3"></select>
+    <select id="chat-city" class="custom-select rounded-full px-4 py-3"></select>
+  </div>
+  <div class="glass-card flex flex-col h-[480px]">
+    <div id="chat-messages" class="flex-1 p-6 overflow-y-auto space-y-3"></div>
+    <div class="p-3 border-t border-white/10 flex flex-wrap gap-1">
+      <button onclick="App.insertEmoji('👋')" class="text-lg hover:scale-125 transition">👋</button>
+      <button onclick="App.insertEmoji('❤️')" class="text-lg hover:scale-125 transition">❤️</button>
+      <button onclick="App.insertEmoji('🔥')" class="text-lg hover:scale-125 transition">🔥</button>
+      <button onclick="App.insertEmoji('✈️')" class="text-lg hover:scale-125 transition">✈️</button>
+      <button onclick="App.insertEmoji('🏨')" class="text-lg hover:scale-125 transition">🏨</button>
+      <button onclick="App.insertEmoji('🚗')" class="text-lg hover:scale-125 transition">🚗</button>
+      <button onclick="App.insertEmoji('🗺️')" class="text-lg hover:scale-125 transition">🗺️</button>
+      <button onclick="App.insertEmoji('🍕')" class="text-lg hover:scale-125 transition">🍕</button>
+      <button onclick="App.insertEmoji('📸')" class="text-lg hover:scale-125 transition">📸</button>
+      <button onclick="App.insertEmoji('🎉')" class="text-lg hover:scale-125 transition">🎉</button>
+    </div>
+    <div class="p-4 border-t border-white/10 flex gap-3">
+      <input id="chat-input" type="text" data-i18n-placeholder="chatPlaceholder" placeholder="💬 Type a message..." class="flex-1 custom-select rounded-full px-5 py-3" onkeypress="if(event.key==='Enter')App.sendChat()">
+      <button onclick="App.sendChat()" class="btn-pill bg-[#5eead4] text-slate-950 px-6" data-i18n="send">Send 🚀</button>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" class="section max-w-4xl mx-auto px-6 pt-10">
+  <h2 class="text-3xl font-bold mb-2">❓ Frequently Asked Questions</h2>
+  <p class="text-[#a0b9da] mb-6">Everything you need to know about Saqartour</p>
+  <div class="flex flex-wrap gap-2 mb-6">
+    <button class="faq-cat-btn chat-pill active px-4 py-2 rounded-full" data-cat="all" onclick="App.filterFaqs('all')">📋 All</button>
+    <button class="faq-cat-btn chat-pill px-4 py-2 rounded-full" data-cat="account" onclick="App.filterFaqs('account')">👤 Account</button>
+    <button class="faq-cat-btn chat-pill px-4 py-2 rounded-full" data-cat="forum" onclick="App.filterFaqs('forum')">💬 Forum</button>
+    <button class="faq-cat-btn chat-pill px-4 py-2 rounded-full" data-cat="chat" onclick="App.filterFaqs('chat')">⚡ Chat</button>
+    <button class="faq-cat-btn chat-pill px-4 py-2 rounded-full" data-cat="wallet" onclick="App.filterFaqs('wallet')">💰 Wallet</button>
+    <button class="faq-cat-btn chat-pill px-4 py-2 rounded-full" data-cat="hosts" onclick="App.filterFaqs('hosts')">🏠 Hosts</button>
+  </div>
+  <div id="faq-list"></div>
+</section>
+
+<!-- BOOKINGS -->
+<section id="bookings" class="section max-w-4xl mx-auto px-6 pt-10">
+  <h2 class="text-3xl font-bold mb-6">🎫 My Bookings</h2>
+  <div class="glass-card p-8"><div id="bookings-list"></div></div>
+</section>
+
+<!-- HOST LISTINGS PUBLIC -->
+<section id="host-panel" class="section max-w-7xl mx-auto px-6 pt-10">
+  <h2 class="text-3xl font-bold mb-2">🏠 Host Marketplace</h2>
+  <p class="text-[#a0b9da] mb-6">Real listings from verified hosts — hotels, car rentals, tours</p>
+  <div id="host-listings-public" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10"></div>
+  <div id="host-panel-content" class="glass-card p-8"></div>
+</section>
+
+<!-- WALLET -->
+<section id="wallet" class="section max-w-5xl mx-auto px-6 pt-10">
+  <h2 class="text-3xl font-bold mb-6">💰 Wallet & Rewards</h2>
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+    <div class="glass-card p-8"><div class="text-sm text-[#7a9bb6]">💵 Balance</div><div class="text-4xl font-bold mt-2">$<span id="wallet-balance">0.00</span></div></div>
+    <div class="glass-card p-8"><div class="text-sm text-[#7a9bb6]">⭐ Points</div><div class="text-4xl font-bold mt-2 text-[#5eead4]"><span id="points-balance">0</span></div></div>
+    <div class="glass-card p-8"><div class="text-sm text-[#7a9bb6]">🎖️ Level</div><div class="text-4xl font-bold mt-2">L<span id="verification-level">1</span><button onclick="App.requestVerification()" class="btn-pill w-full mt-4 bg-[#5eead4] text-slate-950 py-2 text-sm">Upgrade L2</button></div>
+  </div>
+  <div class="glass-card p-8 mb-6">
+    <h3 class="text-xl font-semibold mb-2">💳 Top Up via Stripe</h3>
+    <p class="text-sm text-[#7a9bb6] mb-4">Real card payment — secured by Stripe</p>
+    <div class="grid sm:grid-cols-2 gap-3">
+      <input id="topup-amount" type="number" value="50" min="1" class="custom-select rounded-full px-4 py-3">
+      <button onclick="App.topUpWallet()" class="btn-pill bg-[#5eead4] text-slate-950 py-3">Pay with Card 💳</button>
+    </div>
+  </div>
+  <div class="glass-card p-8 mb-6">
+    <h3 class="text-xl font-semibold mb-4">💸 Redeem</h3>
+    <p class="text-sm text-[#7a9bb6] mb-3">Real withdrawal — processed in 3–5 business days</p>
+    <div class="grid sm:grid-cols-2 gap-3">
+      <input id="redeem-amount" type="number" placeholder="USD amount" class="custom-select rounded-full px-4 py-3">
+      <button onclick="App.redeemFunds()" class="btn-pill bg-[#5eead4] text-slate-950 py-3">Request Redemption</button>
+    </div>
+  </div>
+  <div class="glass-card p-8">
+    <h3 class="text-xl font-semibold mb-4">📜 Transaction History</h3>
+    <div id="transactions-list"></div>
+  </div>
+</section>
+
+<!-- PROFILE -->
+<section id="profile" class="section max-w-4xl mx-auto px-6 pt-10">
+  <h2 class="text-3xl font-bold mb-6">👤 Your Profile</h2>
+  <div id="profile-content" class="glass-card p-8"></div>
+</section>
+
+<!-- REGISTER MODAL -->
+<div id="register-modal" class="modal-backdrop hidden" data-modal>
+  <div class="glass-card w-full max-w-lg p-8 rounded-3xl max-h-[90vh] overflow-y-auto modal-panel">
+    <div class="flex justify-between mb-4"><h3 class="text-2xl font-bold" data-i18n="registerTitle">✨ Create Account</h3><button type="button" onclick="App.closeModal('register-modal')" class="modal-close" aria-label="Close">✕</button></div>
+    <p class="text-sm text-[#7a9bb6] mb-4">Choose your account type, then verify your email 📧</p>
+
+    <div class="grid grid-cols-2 gap-3 mb-5">
+      <button type="button" data-type="traveler" onclick="App.setAccountType('traveler')" class="account-type-btn ring-2 ring-[#5eead4] rounded-2xl p-4 border border-white/10 text-center">
+        <div class="text-3xl">🧳</div><div class="font-semibold mt-2">Traveler</div><div class="text-xs text-[#7a9bb6]">Explore & book</div>
+      </button>
+      <button type="button" data-type="host" onclick="App.setAccountType('host')" class="account-type-btn opacity-60 rounded-2xl p-4 border border-white/10 text-center">
+        <div class="text-3xl">🏠</div><div class="font-semibold mt-2">Host</div><div class="text-xs text-[#7a9bb6]">List & earn +20pts</div>
+      </button>
+    </div>
+
+    <div class="space-y-3">
+      <input id="reg-username" placeholder="👤 Username (3–24 chars)" class="w-full custom-select rounded-full px-4 py-3 border border-white/10">
+      <input id="reg-email" type="email" placeholder="📧 Email address" class="w-full custom-select rounded-full px-4 py-3 border border-white/10">
+      <div class="grid grid-cols-2 gap-3">
+        <input id="reg-password" type="password" placeholder="🔒 Password" class="w-full custom-select rounded-full px-4 py-3 border border-white/10">
+        <input id="reg-password-confirm" type="password" placeholder="🔒 Confirm" class="w-full custom-select rounded-full px-4 py-3 border border-white/10">
+      </div>
+      <input id="reg-address" placeholder="📍 Address (optional)" class="w-full custom-select rounded-full px-4 py-3 border border-white/10">
+      <select id="reg-nationality" class="w-full custom-select rounded-full px-4 py-3 border border-white/10"></select>
+      <input id="reg-referral" placeholder="🎁 Referral code (optional)" class="w-full custom-select rounded-full px-4 py-3 border border-white/10">
+      <button onclick="App.register()" class="btn-pill w-full bg-gradient-to-r from-[#5eead4] to-[#8b5cf6] text-slate-950 py-3 font-semibold">Register & Verify Email 📧</button>
+      <button onclick="App.modal('register-modal',false);App.modal('login-modal',true)" class="btn-pill w-full py-3">Already have account? Login</button>
+    </div>
+  </div>
+</div>
+
+<div id="login-modal" class="modal-backdrop hidden" data-modal>
+  <div class="glass-card w-full max-w-md p-8 rounded-3xl modal-panel">
+    <div class="flex justify-between mb-6"><h3 class="text-2xl font-bold" data-i18n="loginTitle">🔐 Login</h3><button type="button" onclick="App.closeModal('login-modal')" class="modal-close" aria-label="Close">✕</button></div>
+    <div class="space-y-3">
+      <input id="login-identifier" placeholder="Username or email" class="w-full custom-select rounded-full px-4 py-3 border border-white/10">
+      <input id="login-password" type="password" placeholder="Password" class="w-full custom-select rounded-full px-4 py-3 border border-white/10">
+      <button onclick="App.login()" class="btn-pill w-full bg-[#5eead4] text-slate-950 py-3">Login 👋</button>
+      <button onclick="App.modal('login-modal',false);App.modal('forgot-modal',true)" class="btn-pill w-full py-2 text-sm text-[#7a9bb6]">Forgot password?</button>
+    </div>
+  </div>
+</div>
+
+<div id="forgot-modal" class="modal-backdrop hidden" data-modal>
+  <div class="glass-card w-full max-w-md p-8 rounded-3xl modal-panel">
+    <div class="flex justify-between items-start mb-4"><h3 class="text-2xl font-bold" data-i18n="resetTitle">🔐 Reset Password</h3><button type="button" onclick="App.closeModal('forgot-modal')" class="modal-close" aria-label="Close">✕</button></div>
+    <p class="text-sm text-[#7a9bb6] mb-4" data-i18n="resetDesc">We'll email you a real reset link</p>
+    <input id="forgot-email" type="email" data-i18n-placeholder="resetEmail" placeholder="Your email" class="w-full custom-select rounded-full px-4 py-3 mb-4 border border-white/10">
+    <button onclick="App.forgotPassword()" class="btn-pill w-full bg-[#5eead4] text-slate-950 py-3" data-i18n="sendReset">Send Reset Email</button>
+  </div>
+</div>
+
+<div id="reset-modal" class="modal-backdrop hidden" data-modal>
+  <div class="glass-card w-full max-w-md p-8 rounded-3xl modal-panel">
+    <div class="flex justify-between items-start mb-4"><h3 class="text-2xl font-bold" data-i18n="newPassTitle">🔑 New Password</h3><button type="button" onclick="App.closeModal('reset-modal')" class="modal-close" aria-label="Close">✕</button></div>
+    <input id="reset-token" type="hidden">
+    <input id="reset-password" type="password" data-i18n-placeholder="newPass" placeholder="New password" class="w-full custom-select rounded-full px-4 py-3 mb-3 border border-white/10">
+    <input id="reset-password-confirm" type="password" data-i18n-placeholder="confirmPass" placeholder="Confirm password" class="w-full custom-select rounded-full px-4 py-3 mb-4 border border-white/10">
+    <button onclick="App.resetPassword()" class="btn-pill w-full bg-[#5eead4] text-slate-950 py-3" data-i18n="updatePass">Update Password</button>
+  </div>
+</div>
+
+<div id="verify-email-modal" class="modal-backdrop hidden" data-modal>
+  <div class="glass-card w-full max-w-md p-8 rounded-3xl modal-panel">
+    <div class="flex justify-between items-start mb-2"><h3 class="text-2xl font-bold" data-i18n="verifyTitle">📧 Verify Your Email</h3><button type="button" onclick="App.closeModal('verify-email-modal')" class="modal-close" aria-label="Close">✕</button></div>
+    <p class="text-sm text-[#7a9bb6]">Account type: <span id="verify-account-type" class="text-[#5eead4]"></span></p>
+    <p class="text-sm text-[#7a9bb6] mt-2">Code sent to: <span id="verify-email-address" class="text-white"></span></p>
+    <p id="verify-delivery-hint" class="text-sm text-amber-300/90 mt-4 hidden"></p>
+    <p class="text-sm text-[#a0b9da] mt-2" data-i18n="verifyHint">Check your inbox and spam folder. Code expires in 30 minutes.</p>
+    <input id="verification-code" data-i18n-placeholder="verifyCode" placeholder="Enter 6-digit code" maxlength="6" class="w-full custom-select rounded-full px-4 py-3 mt-4 mb-3 border border-white/10 text-center text-xl tracking-widest">
+    <button onclick="App.verifyEmail()" class="btn-pill w-full bg-[#5eead4] text-slate-950 py-3 mb-2" data-i18n="verifyBtn">✅ Verify Email</button>
+    <button onclick="App.resendVerification()" class="btn-pill w-full py-3 text-sm" data-i18n="resendCode">🔄 Resend to Email</button>
+  </div>
+</div>
+
+<div id="booking-modal" class="modal-backdrop hidden" data-modal>
+  <div class="glass-card w-full max-w-md p-8 rounded-3xl modal-panel">
+    <div class="flex justify-between items-start mb-2"><h3 class="text-2xl font-bold" data-i18n="bookTour">🎫 Book Tour</h3><button type="button" onclick="App.closeModal('booking-modal')" class="modal-close" aria-label="Close">✕</button></div>
+    <p id="booking-tour-title" class="font-semibold"></p>
+    <p id="booking-tour-price" class="text-[#5eead4] mb-4"></p>
+    <input type="hidden" id="booking-tour-id">
+    <input id="booking-guests" type="number" value="1" min="1" class="w-full custom-select rounded-full px-4 py-3 mb-3 border border-white/10">
+    <input id="booking-date" type="date" class="w-full custom-select rounded-full px-4 py-3 mb-4 border border-white/10">
+    <button onclick="App.submitBooking()" class="btn-pill w-full bg-[#5eead4] text-slate-950 py-3" data-i18n="payStripe">Pay with Stripe 💳</button>
+  </div>
+</div>
+
+<div id="create-thread-modal" class="modal-backdrop hidden" data-modal>
+  <div class="glass-card w-full max-w-lg p-8 rounded-3xl modal-panel">
+    <div class="flex justify-between items-start mb-4"><h3 class="text-2xl font-bold" data-i18n="threadTitle">➕ New Forum Thread</h3><button type="button" onclick="App.closeModal('create-thread-modal')" class="modal-close" aria-label="Close">✕</button></div>
+    <input id="thread-title" data-i18n-placeholder="threadTitlePh" placeholder="📝 Title" class="w-full custom-select rounded-full px-4 py-3 mb-3 border border-white/10">
+    <div class="grid grid-cols-3 gap-3 mb-3">
+      <select id="thread-country" onchange="App.onThreadCountryChange()" class="custom-select rounded-full px-3 py-3 text-sm border border-white/10"></select>
+      <select id="thread-city" class="custom-select rounded-full px-3 py-3 text-sm border border-white/10"></select>
+      <select id="thread-subcategory" class="custom-select rounded-full px-3 py-3 text-sm border border-white/10"></select>
+    </div>
+    <textarea id="thread-body" rows="4" data-i18n-placeholder="threadBodyPh" placeholder="Share your question or tip..." class="w-full custom-select rounded-2xl px-4 py-3 mb-4 border border-white/10"></textarea>
+    <button onclick="App.submitThread()" class="btn-pill bg-[#5eead4] text-slate-950 px-6 py-3" data-i18n="submit">Submit 🚀</button>
+  </div>
+</div>
+
+<div id="thread-modal" class="modal-backdrop hidden" data-modal>
+  <div class="glass-card w-full max-w-2xl p-8 rounded-3xl max-h-[90vh] overflow-y-auto modal-panel">
+    <div class="flex justify-end mb-2"><button type="button" onclick="App.closeModal('thread-modal')" class="modal-close" aria-label="Close">✕</button></div>
+    <h3 id="thread-detail-title" class="text-2xl font-bold"></h3>
+    <p id="thread-detail-meta" class="text-sm text-[#7a9bb6] mt-2"></p>
+    <p id="thread-detail-body" class="text-[#a0b9da] mt-4"></p>
+    <input type="hidden" id="thread-detail-id">
+    <div id="thread-comments" class="mt-6"></div>
+    <div class="mt-4 flex gap-3">
+      <input id="thread-comment-input" data-i18n-placeholder="commentPh" placeholder="💬 Add a comment..." class="flex-1 custom-select rounded-full px-4 py-3 border border-white/10">
+      <button onclick="App.postComment()" class="btn-pill bg-[#5eead4] text-slate-950 px-6" data-i18n="post">Post</button>
+    </div>
+  </div>
+</div>
+
+<footer class="border-t border-white/10 mt-16 py-8 text-center text-[#7a9bb6] text-sm">
+  <p><span data-i18n="footer">© 2026 Saqartour · 80+ Countries</span> · <a href="/admin" class="text-[#5eead4]">Admin CRM</a></p>
+</footer>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/api.js"></script>
+<script src="/js/i18n.js"></script>
+<script src="/js/regions.js"></script>
+<script src="/js/socket-client.js"></script>
+<script src="/js/app.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', async () => {
+    await SaqartourI18n.init();
+    await SaqartourI18n.setLanguage(SaqartourI18n.lang);
+    await App.init();
+    const nat = document.getElementById('reg-nationality');
+    if (nat && window.SaqartourRegions?.countries?.length) {
+      nat.innerHTML = SaqartourRegions.countries.map(c => `<option value="${c.name}">${c.flag} ${c.name}</option>`).join('');
+    }
+  });
+</script>
+</body>
+</html>

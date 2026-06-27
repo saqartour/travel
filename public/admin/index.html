@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Saqartour Admin CRM</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/admin/css/admin.css">
+</head>
+<body>
+
+<div id="login-screen" class="login-screen">
+  <div class="login-box">
+    <h1>🇬🇪 Saqartour CRM</h1>
+    <p style="color:var(--muted);margin-bottom:1.5rem">Administrator login required</p>
+    <div class="form-group" style="margin-bottom:1rem">
+      <label>Email or Username</label>
+      <input id="admin-email" type="text" placeholder="saqartour@gmail.com">
+    </div>
+    <div class="form-group" style="margin-bottom:1rem">
+      <label>Password</label>
+      <input id="admin-password" type="password" placeholder="Admin password">
+    </div>
+    <p id="login-error" style="color:var(--danger);font-size:0.85rem;margin-bottom:1rem"></p>
+    <button class="btn btn-primary" style="width:100%;padding:0.75rem" onclick="AdminCRM.login()">Sign In</button>
+    <p style="text-align:center;margin-top:1rem;font-size:0.8rem;color:var(--muted)"><a href="/" style="color:var(--primary)">← Back to site</a></p>
+  </div>
+</div>
+
+<div id="admin-app" class="admin-layout hidden">
+  <aside class="sidebar">
+    <h1>Saqartour CRM</h1>
+    <p class="tag">Admin Control Panel</p>
+    <p style="font-size:0.8rem;color:var(--muted);margin:1rem 0">Logged in: <strong id="admin-welcome"></strong></p>
+    <nav style="margin-top:1.5rem">
+      <button class="nav-item active" data-panel="dashboard" onclick="AdminCRM.showPanel('dashboard')"><i class="fa-solid fa-chart-line"></i> Dashboard</button>
+      <button class="nav-item" data-panel="users" onclick="AdminCRM.showPanel('users')"><i class="fa-solid fa-users"></i> Users</button>
+      <button class="nav-item" data-panel="threads" onclick="AdminCRM.showPanel('threads')"><i class="fa-solid fa-comments"></i> Forum Moderation</button>
+      <button class="nav-item" data-panel="tours" onclick="AdminCRM.showPanel('tours')"><i class="fa-solid fa-map"></i> Tours</button>
+      <button class="nav-item" data-panel="bookings" onclick="AdminCRM.showPanel('bookings')"><i class="fa-solid fa-calendar-check"></i> Bookings</button>
+      <button class="nav-item" data-panel="chat" onclick="AdminCRM.showPanel('chat')"><i class="fa-solid fa-message"></i> Chat Moderation</button>
+      <button class="nav-item" data-panel="iplogs" onclick="AdminCRM.showPanel('iplogs')"><i class="fa-solid fa-network-wired"></i> IP Logs</button>
+      <button class="nav-item" data-panel="audit" onclick="AdminCRM.showPanel('audit')"><i class="fa-solid fa-shield"></i> Audit Trail</button>
+    </nav>
+    <div style="margin-top:2rem">
+      <a href="/" class="btn" style="display:block;text-align:center;text-decoration:none;margin-bottom:0.5rem">View Site</a>
+      <button class="btn btn-danger" style="width:100%" onclick="AdminCRM.logout()">Logout</button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <!-- Dashboard -->
+    <div id="panel-dashboard" class="panel active">
+      <h2 style="margin:0 0 1.5rem">Dashboard Overview</h2>
+      <div id="stats-grid" class="stat-grid"></div>
+      <div class="card"><h2>Recent Logins</h2><table><thead><tr><th>User</th><th>IP</th><th>Action</th><th>Time</th></tr></thead><tbody id="recent-logins"></tbody></table></div>
+      <div class="card"><h2>Recent Admin Activity</h2><table><thead><tr><th>Admin</th><th>Action</th><th>Target</th><th>Time</th></tr></thead><tbody id="recent-audit"></tbody></table></div>
+    </div>
+
+    <!-- Users -->
+    <div id="panel-users" class="panel">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
+        <h2 style="margin:0">User Management</h2>
+        <button class="btn btn-primary" onclick="AdminCRM.openAddUser()"><i class="fa-solid fa-plus"></i> Add User</button>
+      </div>
+      <div class="toolbar">
+        <input id="user-search" type="text" placeholder="Search username, email, IP..." onkeyup="if(event.key==='Enter')AdminCRM.loadUsers()">
+        <select id="user-status-filter" onchange="AdminCRM.loadUsers()"><option value="">All statuses</option><option value="active">Active</option><option value="banned">Banned</option></select>
+        <button class="btn" onclick="AdminCRM.loadUsers()">Search</button>
+      </div>
+      <div class="card" style="overflow-x:auto">
+        <table><thead><tr>
+          <th>User</th><th>Role</th><th>Status</th><th>Reg. IP</th><th>Last IP</th><th>Points</th><th>Wallet</th><th>Verified</th><th>Joined</th><th>Actions</th>
+        </tr></thead><tbody id="users-table"></tbody></table>
+      </div>
+    </div>
+
+    <!-- Threads -->
+    <div id="panel-threads" class="panel">
+      <h2>Pending Forum Threads</h2>
+      <div class="card"><table><thead><tr><th>Title</th><th>Category</th><th>Author</th><th>Date</th><th>Actions</th></tr></thead><tbody id="threads-table"></tbody></table></div>
+    </div>
+
+    <!-- Tours -->
+    <div id="panel-tours" class="panel">
+      <h2>Tour Management</h2>
+      <div class="card">
+        <h2 style="font-size:1rem">Add New Tour</h2>
+        <div class="form-grid">
+          <div class="form-group"><label>Title</label><input id="new-tour-title" placeholder="Tour name"></div>
+          <div class="form-group"><label>Destination</label><input id="new-tour-dest" placeholder="Tbilisi"></div>
+          <div class="form-group"><label>Price ($)</label><input id="new-tour-price" type="number" value="199"></div>
+          <div class="form-group"><label>Days</label><input id="new-tour-days" type="number" value="2"></div>
+        </div>
+        <div class="form-group" style="margin-top:1rem"><label>Description</label><textarea id="new-tour-desc" rows="2"></textarea></div>
+        <button class="btn btn-primary" style="margin-top:1rem" onclick="AdminCRM.addTour()">Create Tour</button>
+      </div>
+      <div class="card"><table><thead><tr><th>Title</th><th>Destination</th><th>Price</th><th>Duration</th><th>Status</th><th>Actions</th></tr></thead><tbody id="tours-table"></tbody></table></div>
+    </div>
+
+    <!-- Bookings -->
+    <div id="panel-bookings" class="panel">
+      <h2>Booking Management</h2>
+      <div class="card"><table><thead><tr><th>Tour</th><th>User</th><th>IP</th><th>Guests</th><th>Total</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead><tbody id="bookings-table"></tbody></table></div>
+    </div>
+
+    <!-- Chat -->
+    <div id="panel-chat" class="panel">
+      <h2>Chat Moderation</h2>
+      <div class="card"><table><thead><tr><th>User</th><th>Channel</th><th>Message</th><th>Time</th><th>Actions</th></tr></thead><tbody id="chat-table"></tbody></table></div>
+    </div>
+
+    <!-- IP Logs -->
+    <div id="panel-iplogs" class="panel">
+      <h2>IP Address Logs</h2>
+      <p style="color:var(--muted);margin-bottom:1rem">All registration and login IP addresses tracked server-side</p>
+      <div class="card"><table><thead><tr><th>User</th><th>IP Address</th><th>Action</th><th>User Agent</th><th>Time</th></tr></thead><tbody id="iplogs-table"></tbody></table></div>
+    </div>
+
+    <!-- Audit -->
+    <div id="panel-audit" class="panel">
+      <h2>Admin Audit Trail</h2>
+      <div class="card"><table><thead><tr><th>Admin</th><th>Action</th><th>Target</th><th>IP</th><th>Time</th></tr></thead><tbody id="audit-table"></tbody></table></div>
+    </div>
+  </main>
+</div>
+
+<!-- User Form Modal -->
+<div id="user-form-modal" class="modal hidden">
+  <div class="modal-content">
+    <div class="modal-header"><h3 id="user-form-title">Edit User</h3><button class="btn" onclick="document.getElementById('user-form-modal').classList.add('hidden')">✕</button></div>
+    <form id="user-form" onsubmit="event.preventDefault();AdminCRM.saveUser()">
+      <input type="hidden" id="user-form-id">
+      <div class="form-grid">
+        <div class="form-group"><label>Username</label><input id="uf-username" required></div>
+        <div class="form-group"><label>Email</label><input id="uf-email" type="email" required></div>
+        <div class="form-group"><label>Password</label><input id="uf-password" type="password" placeholder="Leave blank to keep"></div>
+        <div class="form-group"><label>Role</label><select id="uf-role"><option value="user">User</option><option value="moderator">Moderator</option><option value="admin">Admin</option></select></div>
+        <div class="form-group"><label>Account Type</label><select id="uf-account-type"><option value="traveler">Traveler</option><option value="host">Host</option></select></div>
+        <div class="form-group"><label>Status</label><select id="uf-status"><option value="active">Active</option><option value="banned">Banned</option></select></div>
+        <div class="form-group"><label>Nationality</label><input id="uf-nationality" value="Georgia"></div>
+        <div class="form-group"><label>Points</label><input id="uf-points" type="number" value="50"></div>
+        <div class="form-group"><label>Wallet ($)</label><input id="uf-wallet" type="number" step="0.01" value="0"></div>
+      </div>
+      <div class="form-group" style="margin-top:1rem"><label>Address</label><input id="uf-address"></div>
+      <label style="display:flex;align-items:center;gap:0.5rem;margin-top:1rem"><input type="checkbox" id="uf-verified"> Email verified</label>
+      <button type="submit" class="btn btn-primary" style="margin-top:1.5rem;width:100%">Save User</button>
+    </form>
+  </div>
+</div>
+
+<!-- User Detail Modal -->
+<div id="user-detail-modal" class="modal hidden">
+  <div class="modal-content" style="max-width:800px">
+    <div class="modal-header"><h3>User Details</h3><button class="btn" onclick="document.getElementById('user-detail-modal').classList.add('hidden')">✕</button></div>
+    <div id="user-detail-content"></div>
+  </div>
+</div>
+
+<script src="/js/api.js"></script>
+<script src="/admin/js/admin-crm.js"></script>
+</body>
+</html>
