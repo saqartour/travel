@@ -62,6 +62,21 @@ stripe listen --forward-to localhost:3000/api/payments/webhook
 | Email | `saqartour@gmail.com` |
 | Password | `Sakartvelo2026!` |
 
+## Deploy Free (Render.com)
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/saqartour/travel)
+
+1. Click the button above (log in with GitHub account **saqartour**)
+2. Approve the Blueprint — creates **https://saqartour-travel.onrender.com**
+3. When prompted, set these environment variables:
+   - `APP_URL` → `https://saqartour-travel.onrender.com`
+   - `CORS_ORIGIN` → `https://saqartour-travel.onrender.com`
+   - `SMTP_PASS` → your Gmail app password
+   - `ADMIN_PASSWORD` → your admin password
+4. Wait ~3 minutes for build → site is live
+
+> Free tier sleeps after 15 min idle (cold start ~30s). SQLite data resets on redeploy.
+
 ## Go Live (Production)
 
 1. Copy `.env.example` → `.env` and set:
