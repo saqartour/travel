@@ -7,32 +7,113 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        body { font-family: 'Inter', system-ui, sans-serif; }
+        :root {
+            color-scheme: light;
+            --bg: #f7efe6;
+            --surface: #ffffff;
+            --surface-soft: #f8ede3;
+            --text: #22312f;
+            --muted: #7d6b5f;
+            --primary: #0f766e;
+            --primary-soft: #daf0ed;
+            --accent: #b1815a;
+            --border: #e6d5c5;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            color: var(--text);
+            background: radial-gradient(circle at top right, rgba(15,118,110,0.12), transparent 25%), var(--bg);
+        }
+
         .heading { font-family: 'Playfair Display', Georgia, serif; }
-        .section { display: none; }
+
+        .section { display: none; padding-bottom: 4rem; }
         .section.active { display: block; }
-        .nav-active { color: #0f766e; font-weight: 600; border-bottom: 3px solid #0f766e; }
-        .premium-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .premium-card:hover { transform: translateY(-4px); box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1); }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 2rem;
+            box-shadow: 0 18px 40px rgba(15,118,110,0.08);
+        }
+
+        .btn-pill {
+            border-radius: 9999px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+        }
+
+        .btn-pill:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 14px 30px rgba(15,118,110,0.12);
+        }
+
+        .thread-card {
+            padding: 1.75rem;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .thread-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 30px rgba(15,118,110,0.08);
+        }
+
+        .chat-pill {
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+        }
+
+        .chat-pill:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 20px rgba(15,118,110,0.1);
+        }
+
+        .chat-pill.active,
+        .chat-pill.active:hover {
+            background: var(--primary);
+            color: white;
+            border-color: transparent;
+        }
+
+        .chat-bubble { animation: fadeInUp 0.2s ease; }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.45rem 0.9rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-pending { background: #fff4e1; color: #986a24; }
+        .status-approved { background: #def7ec; color: #166534; }
+        .status-rejected { background: #fee2e2; color: #991b1b; }
+
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } }
     </style>
 </head>
-<body class="bg-slate-50">
+<body class="bg-[#f7efe6] text-slate-900">
 
     <!-- Navbar -->
-    <nav class="bg-white border-b sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-            <div class="flex items-center gap-x-3">
-                <div class="w-9 h-9 bg-teal-700 rounded-2xl flex items-center justify-center">
+    <nav class="bg-white/95 backdrop-blur-md border-b border-[#e8d7c3] sticky top-0 z-50 shadow-sm">
+        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-teal-700 rounded-3xl flex items-center justify-center shadow-md">
                     <i class="fa-solid fa-mountain text-white"></i>
                 </div>
-                <span class="font-semibold text-2xl">Georgia Travel <span class="text-teal-700">Forum</span></span>
+                <div>
+                    <div class="font-semibold text-xl">Georgia Travel</div>
+                    <div class="text-sm text-slate-500">Forum & community hub</div>
+                </div>
             </div>
 
-            <div class="flex items-center gap-x-8 text-sm">
-                <button onclick="showSection('forum')" class="nav-active px-4 py-2" id="nav-forum">Forum</button>
-                <button onclick="showSection('live-chat')" class="px-4 py-2" id="nav-live-chat">Live Chat</button>
-                <button onclick="showSection('wallet')" class="px-4 py-2" id="nav-wallet">Wallet</button>
-                <button onclick="showSection('profile')" class="px-4 py-2" id="nav-profile">Profile</button>
+            <div class="flex items-center gap-2 text-sm">
+                <button onclick="showSection('forum')" class="btn-pill nav-active px-5 py-2 text-slate-700" id="nav-forum">Forum</button>
+                <button onclick="showSection('live-chat')" class="btn-pill px-5 py-2 text-slate-700 hover:bg-[#daf0ed]" id="nav-live-chat">Live Chat</button>
+                <button onclick="showSection('wallet')" class="btn-pill px-5 py-2 text-slate-700 hover:bg-[#daf0ed]" id="nav-wallet">Wallet</button>
+                <button onclick="showSection('profile')" class="btn-pill px-5 py-2 text-slate-700 hover:bg-[#daf0ed]" id="nav-profile">Profile</button>
+                <button onclick="openAdminLogin()" class="btn-pill px-5 py-2 text-slate-700 hover:bg-[#daf0ed]" id="nav-admin">Admin</button>
             </div>
 
             <div id="user-nav"></div>
@@ -40,20 +121,33 @@
     </nav>
 
     <!-- FORUM SECTION -->
-    <div id="forum" class="section active max-w-7xl mx-auto px-6 pt-8">
-        <div class="flex justify-between items-end mb-8">
+    <div id="forum" class="section active max-w-7xl mx-auto px-6 pt-10">
+        <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between mb-10">
             <div>
                 <h1 class="text-4xl font-semibold heading">Community Discussions</h1>
-                <p class="text-slate-600 mt-1">Honest conversations from travelers across the Caucasus</p>
+                <p class="text-slate-600 mt-1 max-w-2xl">Share travel tips, ask about the best stays, and connect with other Georgia explorers.</p>
             </div>
-            <button onclick="showCreateThreadModal()" class="bg-teal-700 hover:bg-teal-800 transition px-6 py-3 rounded-3xl text-white font-medium flex items-center gap-x-2">
-                <i class="fa-solid fa-plus"></i> <span>New Thread</span>
-            </button>
+            <div class="flex flex-col sm:flex-row gap-3">
+                <button onclick="showCreateThreadModal()" class="bg-teal-700 hover:bg-teal-800 transition px-7 py-3 rounded-3xl text-white font-medium flex items-center gap-x-3">
+                    <i class="fa-solid fa-plus"></i><span>New Thread</span>
+                </button>
+                <button onclick="showLoginModal()" class="border border-[#e6d5c5] bg-white px-7 py-3 rounded-3xl text-slate-700 hover:shadow-md">Login</button>
+            </div>
         </div>
 
-        <div class="bg-white rounded-3xl shadow border border-slate-200">
-            <div class="px-6 py-4 border-b flex justify-between items-center bg-slate-50">
-                <span class="font-semibold">All Threads</span>
+        <div class="card overflow-hidden">
+            <div class="px-6 py-5 bg-[#f8efe2] border-b border-[#e6d5c5] flex items-center justify-between gap-3">
+                <div>
+                    <span class="font-semibold text-slate-800">All Threads</span>
+                    <p class="text-sm text-slate-500 mt-1">Approved community discussions are shown here.</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <select id="sort-threads" onchange="renderThreads()" class="text-sm border border-[#e6d5c5] rounded-full px-4 py-2 bg-white">
+                        <option value="newest">Newest</option>
+                        <option value="points">Highest Points</option>
+                        <option value="comments">Most Comments</option>
+                    </select>
+                </div>
             </div>
             <div id="threads-list" class="divide-y"></div>
         </div>
@@ -61,125 +155,410 @@
 
     <!-- LIVE CHAT SECTION (Categorized by Region) -->
     <div id="live-chat" class="section max-w-5xl mx-auto px-6 pt-8">
-        <div class="flex justify-between items-center mb-6">
+        <div class="flex justify-between items-center mb-6 gap-4">
             <div>
                 <h2 class="text-3xl font-semibold">Live Regional Chat</h2>
-                <p class="text-slate-600">Talk with travelers in real-time by region</p>
+                <p class="text-slate-600 mt-1">Real-time chat organized by destination region.</p>
+            </div>
+            <div class="flex items-center gap-2 text-sm text-slate-500">
+                <span class="inline-flex items-center gap-2 rounded-full bg-[#daf0ed] px-3 py-2">Live <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span></span>
             </div>
         </div>
 
         <!-- Chat Category Tabs -->
-        <div class="flex gap-2 mb-4 flex-wrap" id="chat-categories">
-            <!-- Populated by JS -->
-        </div>
+        <div class="flex flex-wrap gap-2 mb-4" id="chat-categories"></div>
 
         <div class="bg-white rounded-3xl shadow border flex flex-col h-[620px]">
-            <div id="chat-messages" class="flex-1 p-6 overflow-y-auto space-y-4 bg-slate-50"></div>
+            <div id="chat-messages" class="flex-1 p-6 overflow-y-auto space-y-4 bg-[#f9f4ee]"></div>
 
             <div class="p-4 border-t bg-white rounded-b-3xl">
                 <div class="flex gap-3">
-                    <input id="chat-input" type="text" placeholder="Type your message..." 
-                           class="flex-1 border border-slate-200 rounded-3xl px-5 py-3 text-sm"
-                           onkeypress="if (event.key === 'Enter') sendChatMessage()">
-                    <button onclick="sendChatMessage()" class="bg-teal-700 text-white px-8 rounded-3xl font-medium">Send</button>
+                    <input id="chat-input" type="text" placeholder="Type your message..." class="flex-1 border border-[#e6d5c5] rounded-full px-5 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-teal-200" onkeypress="if (event.key === 'Enter') sendChatMessage()">
+                    <button onclick="sendChatMessage()" class="bg-teal-700 text-white px-8 rounded-full font-medium">Send</button>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- WALLET SECTION -->
-    <div id="wallet" class="section max-w-4xl mx-auto px-6 pt-8">
-        <h2 class="text-3xl font-semibold mb-6">Your Wallet & Points</h2>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Balance Card -->
-            <div class="bg-white rounded-3xl p-8 shadow border">
-                <div class="text-sm text-slate-500">Wallet Balance</div>
-                <div class="text-5xl font-semibold mt-2">$<span id="wallet-balance">0</span></div>
+    <div id="wallet" class="section max-w-5xl mx-auto px-6 pt-8">
+        <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between mb-8">
+            <div>
+                <h2 class="text-3xl font-semibold">Wallet & Rewards</h2>
+                <p class="text-slate-600 mt-1">Manage your travel funds, points, and redemption status.</p>
             </div>
+            <span class="status-pill status-approved">Level 2 verification required for redemption</span>
+        </div>
 
-            <!-- Points Card -->
-            <div class="bg-white rounded-3xl p-8 shadow border">
-                <div class="text-sm text-slate-500">Your Points</div>
-                <div class="text-5xl font-semibold mt-2 text-teal-700"><span id="points-balance">0</span> pts</div>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="card p-8">
+                <div class="text-sm text-slate-500">Wallet Balance</div>
+                <div class="text-5xl font-semibold mt-3">$<span id="wallet-balance">0.00</span></div>
+            </div>
+            <div class="card p-8">
+                <div class="text-sm text-slate-500">Total Points</div>
+                <div class="text-5xl font-semibold mt-3 text-teal-700"><span id="points-balance">0</span> pts</div>
+            </div>
+            <div class="card p-8">
+                <div class="text-sm text-slate-500">Verification Level</div>
+                <div class="text-5xl font-semibold mt-3" id="verification-level">1</div>
+                <button onclick="requestVerification()" class="mt-5 w-full bg-[#b1815a] text-white rounded-3xl py-3 hover:bg-[#8c6244] transition">Request Level 2</button>
             </div>
         </div>
 
-        <!-- Crypto Top-up -->
-        <div class="bg-white rounded-3xl p-8 shadow border mt-6">
-            <h3 class="font-semibold mb-4">Top Up with Cryptocurrency</h3>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <input id="topup-amount" type="number" value="50" class="border rounded-2xl px-4 py-3">
-                <select id="crypto-type" class="border rounded-2xl px-4 py-3">
-                    <option value="USDT">USDT (TRC20)</option>
-                    <option value="BTC">Bitcoin</option>
-                    <option value="ETH">Ethereum</option>
-                </select>
-                <button onclick="topUpWallet()" class="bg-teal-700 text-white rounded-2xl font-medium">Top Up</button>
+        <div class="card p-8 mt-6">
+            <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                <div>
+                    <h3 class="text-xl font-semibold">Crypto Top-Up</h3>
+                    <p class="text-sm text-slate-500 mt-2">Add balance instantly with supported crypto options.</p>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full lg:w-auto">
+                    <input id="topup-amount" type="number" value="50" min="1" class="border border-[#e6d5c5] rounded-3xl px-4 py-3 w-full" placeholder="Amount">
+                    <select id="crypto-type" class="border border-[#e6d5c5] rounded-3xl px-4 py-3 w-full">
+                        <option value="USDT">USDT (TRC20)</option>
+                        <option value="BTC">Bitcoin</option>
+                        <option value="ETH">Ethereum</option>
+                    </select>
+                    <button onclick="topUpWallet()" class="bg-teal-700 text-white rounded-3xl px-6 py-3">Top Up</button>
+                </div>
             </div>
+        </div>
+
+        <div class="card p-8 mt-6">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div>
+                    <h3 class="text-xl font-semibold">Redemption</h3>
+                    <p class="text-slate-600 mt-2">Redeem wallet funds when your account has Level 2 verification.</p>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <input id="redeem-amount" type="number" min="1" class="border border-[#e6d5c5] rounded-3xl px-4 py-3" placeholder="USD amount">
+                    <button onclick="redeemFunds()" class="bg-[#b1815a] text-white rounded-3xl px-6 py-3">Redeem</button>
+                </div>
+            </div>
+            <p class="text-sm text-slate-500 mt-4">Redemptions require Level 2 verification and a positive wallet balance.</p>
         </div>
     </div>
 
     <!-- PROFILE SECTION -->
-    <div id="profile" class="section max-w-2xl mx-auto px-6 pt-8">
+    <div id="profile" class="section max-w-4xl mx-auto px-6 pt-8">
         <h2 class="text-3xl font-semibold mb-6">Your Profile</h2>
-        <div id="profile-content" class="bg-white rounded-3xl p-8 shadow border"></div>
+        <div id="profile-content" class="card bg-white rounded-3xl p-8 shadow border"></div>
+    </div>
+
+    <!-- ADMIN SECTION -->
+    <div id="admin" class="section max-w-6xl mx-auto px-6 pt-8">
+        <div class="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between mb-8">
+            <div>
+                <h2 class="text-3xl font-semibold">Admin Panel</h2>
+                <p class="text-slate-600 mt-1">Approve or reject forum threads and monitor community activity.</p>
+            </div>
+            <button onclick="adminLogout()" class="bg-red-500 text-white rounded-3xl px-6 py-3">Logout Admin</button>
+        </div>
+        <div class="card p-8">
+            <h3 class="text-xl font-semibold mb-4">Pending Threads</h3>
+            <div id="admin-pending" class="space-y-4"></div>
+            <div id="admin-empty" class="text-slate-500 mt-4"></div>
+        </div>
     </div>
 
     <!-- Modals -->
-    <!-- Registration Modal -->
-    <div id="register-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-[100]">
-        <div class="bg-white w-full max-w-md mx-4 rounded-3xl p-8">
-            <h3 class="text-2xl font-semibold mb-6">Create Account</h3>
-            
-            <div class="space-y-4">
-                <input id="reg-username" type="text" placeholder="Choose username" class="w-full border rounded-2xl px-4 py-3">
-                <input id="reg-referral" type="text" placeholder="Referral code (optional)" class="w-full border rounded-2xl px-4 py-3">
+    <div id="register-modal" class="hidden fixed inset-0 bg-black/55 items-center justify-center z-[100] p-4">
+        <div class="bg-white w-full max-w-md mx-auto rounded-3xl p-8 shadow-xl">
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h3 class="text-2xl font-semibold">Create Account</h3>
+                    <p class="text-slate-500 text-sm mt-1">Referral code rewards both users instantly.</p>
+                </div>
+                <button onclick="hideRegisterModal()" class="text-slate-500 text-xl">✕</button>
             </div>
+            <div class="space-y-4">
+                <input id="reg-username" type="text" placeholder="Choose a username" class="w-full border border-[#e6d5c5] rounded-3xl px-4 py-3">
+                <input id="reg-referral" type="text" placeholder="Referral code (optional)" class="w-full border border-[#e6d5c5] rounded-3xl px-4 py-3">
+                <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    <button onclick="registerUser()" class="bg-teal-700 text-white rounded-3xl px-6 py-3">Create Account</button>
+                    <button onclick="showLoginModal()" class="border border-[#e6d5c5] rounded-3xl px-6 py-3 text-slate-700">Already have an account?</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-            <div class="flex gap-3 mt-6">
-                <button onclick="hideRegisterModal()" class="flex-1 py-3 border rounded-3xl">Cancel</button>
-                <button onclick="registerUser()" class="flex-1 py-3 bg-teal-700 text-white rounded-3xl">Create Account</button>
+    <div id="login-modal" class="hidden fixed inset-0 bg-black/55 items-center justify-center z-[100] p-4">
+        <div class="bg-white w-full max-w-md mx-auto rounded-3xl p-8 shadow-xl">
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h3 class="text-2xl font-semibold">Login</h3>
+                    <p class="text-slate-500 text-sm mt-1">Sign in to access the forum and chat.</p>
+                </div>
+                <button onclick="hideLoginModal()" class="text-slate-500 text-xl">✕</button>
+            </div>
+            <div class="space-y-4">
+                <input id="login-username" type="text" placeholder="Username" class="w-full border border-[#e6d5c5] rounded-3xl px-4 py-3">
+                <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    <button onclick="loginUser()" class="bg-teal-700 text-white rounded-3xl px-6 py-3">Login</button>
+                    <button onclick="showRegisterModal()" class="border border-[#e6d5c5] rounded-3xl px-6 py-3 text-slate-700">Create account</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="admin-login-modal" class="hidden fixed inset-0 bg-black/55 items-center justify-center z-[100] p-4">
+        <div class="bg-white w-full max-w-md mx-auto rounded-3xl p-8 shadow-xl">
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h3 class="text-2xl font-semibold">Admin Login</h3>
+                    <p class="text-slate-500 text-sm mt-1">Enter the admin password to access thread approvals.</p>
+                </div>
+                <button onclick="closeAdminLogin()" class="text-slate-500 text-xl">✕</button>
+            </div>
+            <div class="space-y-4">
+                <input id="admin-password" type="password" placeholder="Admin password" class="w-full border border-[#e6d5c5] rounded-3xl px-4 py-3">
+                <div class="flex gap-3">
+                    <button onclick="adminLogin()" class="bg-teal-700 text-white rounded-3xl px-6 py-3">Login</button>
+                    <button onclick="closeAdminLogin()" class="border border-[#e6d5c5] rounded-3xl px-6 py-3 text-slate-700">Cancel</button>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        // ==================== DATA ====================
+        const ADMIN_PASSWORD = 'Sakartvelo2026!';
+
+        let users = JSON.parse(localStorage.getItem('gtf_users')) || [];
         let currentUser = JSON.parse(localStorage.getItem('gtf_user')) || null;
         let threads = JSON.parse(localStorage.getItem('gtf_threads')) || [];
         let chatMessages = JSON.parse(localStorage.getItem('gtf_chat')) || [];
         let currentChatCategory = 'General';
+        let adminLogged = localStorage.getItem('gtf_admin') === 'true';
 
         const chatChannel = new BroadcastChannel('gtf_live_chat');
 
         function saveAll() {
+            localStorage.setItem('gtf_users', JSON.stringify(users));
             localStorage.setItem('gtf_user', JSON.stringify(currentUser));
             localStorage.setItem('gtf_threads', JSON.stringify(threads));
             localStorage.setItem('gtf_chat', JSON.stringify(chatMessages));
+            localStorage.setItem('gtf_admin', adminLogged ? 'true' : 'false');
         }
 
-        // ==================== REAL-TIME CHAT (Categorized) ====================
-        function initChat() {
-            chatChannel.onmessage = (event) => {
-                if (event.data.type === 'new_message' && event.data.category === currentChatCategory) {
-                    chatMessages.push(event.data.message);
-                    saveAll();
-                    renderChatMessages();
-                }
+        function generateReferralCode() {
+            return 'REF' + Math.random().toString(36).slice(2, 8).toUpperCase();
+        }
+
+        function getUserByReferralCode(code) {
+            if (!code) return null;
+            return users.find(user => user.referralCode === code.trim().toUpperCase());
+        }
+
+        function syncCurrentUserToUsers() {
+            if (!currentUser) return;
+            const existing = users.find(u => u.id === currentUser.id);
+            if (existing) {
+                Object.assign(existing, currentUser);
+            } else {
+                users.push(currentUser);
+            }
+            saveAll();
+        }
+
+        function getReferralCount() {
+            if (!currentUser) return 0;
+            return users.filter(user => user.referredBy === currentUser.referralCode).length;
+        }
+
+        function openRegisterModal() {
+            hideLoginModal();
+            document.getElementById('register-modal').classList.remove('hidden');
+            document.getElementById('register-modal').classList.add('flex');
+        }
+
+        function hideRegisterModal() {
+            document.getElementById('register-modal').classList.remove('flex');
+            document.getElementById('register-modal').classList.add('hidden');
+        }
+
+        function showLoginModal() {
+            hideRegisterModal();
+            document.getElementById('login-modal').classList.remove('hidden');
+            document.getElementById('login-modal').classList.add('flex');
+        }
+
+        function hideLoginModal() {
+            document.getElementById('login-modal').classList.remove('flex');
+            document.getElementById('login-modal').classList.add('hidden');
+        }
+
+        function openAdminLogin() {
+            if (adminLogged) {
+                showSection('admin');
+                return;
+            }
+            document.getElementById('admin-login-modal').classList.remove('hidden');
+            document.getElementById('admin-login-modal').classList.add('flex');
+        }
+
+        function closeAdminLogin() {
+            document.getElementById('admin-login-modal').classList.remove('flex');
+            document.getElementById('admin-login-modal').classList.add('hidden');
+        }
+
+        function registerUser() {
+            const username = document.getElementById('reg-username').value.trim();
+            const referral = document.getElementById('reg-referral').value.trim();
+
+            if (!username) return alert('Username is required.');
+            if (users.some(user => user.username.toLowerCase() === username.toLowerCase())) return alert('That username is already taken.');
+
+            currentUser = {
+                id: Date.now(),
+                username,
+                points: 60,
+                wallet: 0,
+                referralCode: generateReferralCode(),
+                referredBy: referral ? referral.toUpperCase() : null,
+                verifiedLevel: 1
             };
 
-            renderChatCategories();
-            renderChatMessages();
+            if (referral) {
+                const referredUser = getUserByReferralCode(referral);
+                if (referredUser && referredUser.id !== currentUser.id) {
+                    currentUser.points += 30;
+                    referredUser.points += 30;
+                    syncCurrentUserToUsers();
+                } else {
+                    currentUser.referredBy = null;
+                }
+            }
+
+            syncCurrentUserToUsers();
+            saveAll();
+            hideRegisterModal();
+            updateUserNav();
+            renderProfile();
+            renderWallet();
+            alert('Account created successfully. Your referral code is ready to share!');
+        }
+
+        function loginUser() {
+            const username = document.getElementById('login-username').value.trim();
+            if (!username) return alert('Enter your username.');
+
+            const user = users.find(user => user.username.toLowerCase() === username.toLowerCase());
+            if (!user) return alert('User not found. Please register first.');
+
+            currentUser = user;
+            saveAll();
+            hideLoginModal();
+            updateUserNav();
+            renderProfile();
+            renderWallet();
+            alert(`Welcome back, ${currentUser.username}!`);
+        }
+
+        function adminLogin() {
+            const password = document.getElementById('admin-password').value;
+            if (password !== ADMIN_PASSWORD) return alert('Incorrect admin password.');
+            adminLogged = true;
+            saveAll();
+            closeAdminLogin();
+            showSection('admin');
+            renderAdminPanel();
+        }
+
+        function adminLogout() {
+            adminLogged = false;
+            saveAll();
+            showSection('forum');
+            alert('Admin logged out.');
+        }
+
+        function renderThreads() {
+            const list = document.getElementById('threads-list');
+            if (!list) return;
+
+            const sort = document.getElementById('sort-threads').value;
+            let visibleThreads = threads.filter(thread => thread.status === 'approved');
+
+            if (sort === 'points') {
+                visibleThreads = visibleThreads.sort((a,b) => (b.points || 0) - (a.points || 0));
+            } else if (sort === 'comments') {
+                visibleThreads = visibleThreads.sort((a,b) => (b.comment_count || 0) - (a.comment_count || 0));
+            } else {
+                visibleThreads = visibleThreads.sort((a,b) => b.id - a.id);
+            }
+
+            if (visibleThreads.length === 0) {
+                list.innerHTML = '<div class="p-8 text-slate-500">No approved threads yet. Submit the first one!</div>';
+                return;
+            }
+
+            list.innerHTML = visibleThreads.map(thread => `
+                <div class="thread-card border-b border-[#f2e7dc]">
+                    <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                        <div>
+                            <div class="text-xs uppercase tracking-[0.25em] text-[#a4866d]">${thread.category}</div>
+                            <h3 class="text-2xl font-semibold text-slate-900 mt-3">${thread.title}</h3>
+                            <p class="text-slate-600 mt-3">${thread.body || 'No description provided.'}</p>
+                        </div>
+                        <div class="text-sm text-slate-500 text-right">
+                            <div>${thread.author}</div>
+                            <div>${new Date(thread.created_at).toLocaleDateString()}</div>
+                        </div>
+                    </div>
+                    <div class="flex flex-wrap gap-3 mt-5 text-xs text-slate-500">
+                        <span class="rounded-full border px-3 py-1 bg-[#f5ede3]">${thread.points || 0} points</span>
+                        <span class="rounded-full border px-3 py-1 bg-[#f5ede3]">${thread.comment_count || 0} comments</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function showCreateThreadModal() {
+            if (!currentUser) {
+                showLoginModal();
+                return;
+            }
+            document.getElementById('create-thread-modal').classList.remove('hidden');
+            document.getElementById('create-thread-modal').classList.add('flex');
+        }
+
+        function hideCreateThreadModal() {
+            document.getElementById('create-thread-modal').classList.remove('flex');
+            document.getElementById('create-thread-modal').classList.add('hidden');
+        }
+
+        function submitThread() {
+            if (!currentUser) {
+                showLoginModal();
+                return;
+            }
+            const title = document.getElementById('thread-title').value.trim();
+            const category = document.getElementById('thread-category').value;
+            const body = document.getElementById('thread-body').value.trim();
+            if (!title) return alert('Thread title is required.');
+
+            threads.unshift({
+                id: Date.now(),
+                title,
+                category,
+                body,
+                author: currentUser.username,
+                points: 0,
+                comment_count: 0,
+                status: 'pending',
+                created_at: new Date().toISOString()
+            });
+            saveAll();
+            hideCreateThreadModal();
+            alert('Thread submitted for admin review.');
+            return;
         }
 
         function renderChatCategories() {
             const container = document.getElementById('chat-categories');
-            const categories = ['General', 'Tbilisi', 'Batumi', 'Mountains', 'Armenia', 'Azerbaijan'];
-            
-            container.innerHTML = categories.map(cat => 
-                `<button onclick="switchChatCategory('${cat}')" class="px-4 py-2 text-sm rounded-3xl border ${cat === currentChatCategory ? 'bg-teal-700 text-white' : 'bg-white'}">${cat}</button>`
-            ).join('');
+            const categories = ['General','Tbilisi','Batumi','Mountains','Armenia','Azerbaijan'];
+            container.innerHTML = categories.map(cat => `
+                <button onclick="switchChatCategory('${cat}')" class="chat-pill px-4 py-2 rounded-full border ${cat === currentChatCategory ? 'bg-teal-700 text-white border-transparent' : 'bg-white text-slate-700 border-[#e6d5c5]'}">${cat}</button>
+            `).join('');
         }
 
         function switchChatCategory(category) {
@@ -190,15 +569,20 @@
 
         function renderChatMessages() {
             const container = document.getElementById('chat-messages');
-            const filtered = chatMessages.filter(m => m.category === currentChatCategory);
-
+            if (!container) return;
+            const filtered = chatMessages.filter(msg => msg.category === currentChatCategory);
+            if (filtered.length === 0) {
+                container.innerHTML = '<div class="text-slate-500">No messages yet in this region. Start the conversation.</div>';
+                return;
+            }
             container.innerHTML = filtered.map(msg => {
                 const isMine = currentUser && msg.username === currentUser.username;
                 return `
                     <div class="flex ${isMine ? 'justify-end' : ''}">
-                        <div class="max-w-[75%] ${isMine ? 'bg-teal-700 text-white' : 'bg-white border'} rounded-3xl px-5 py-3">
-                            <div class="flex items-center gap-x-2 mb-1">
-                                <span class="font-semibold text-sm">${msg.username}</span>
+                        <div class="max-w-[75%] ${isMine ? 'bg-teal-700 text-white' : 'bg-white border border-[#e6d5c5]'} rounded-3xl px-5 py-4 chat-bubble">
+                            <div class="flex items-center justify-between gap-3 mb-2 text-xs ${isMine ? 'text-teal-100' : 'text-slate-500'}">
+                                <span class="font-semibold">${msg.username}</span>
+                                <span>${new Date(msg.timestamp).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</span>
                             </div>
                             <div>${msg.message}</div>
                         </div>
@@ -209,19 +593,20 @@
         }
 
         function sendChatMessage() {
-            if (!currentUser) { alert("Please log in"); return; }
+            if (!currentUser) {
+                showLoginModal();
+                return;
+            }
             const input = document.getElementById('chat-input');
             const message = input.value.trim();
             if (!message) return;
-
             const newMsg = {
                 id: Date.now(),
                 username: currentUser.username,
-                message: message,
+                message,
                 category: currentChatCategory,
                 timestamp: new Date().toISOString()
             };
-
             chatMessages.push(newMsg);
             saveAll();
             chatChannel.postMessage({ type: 'new_message', message: newMsg, category: currentChatCategory });
@@ -229,82 +614,149 @@
             input.value = '';
         }
 
-        // ==================== REGISTRATION WITH REFERRAL ====================
-        function showRegisterModal() {
-            document.getElementById('register-modal').classList.remove('hidden');
-            document.getElementById('register-modal').classList.add('flex');
-        }
-
-        function hideRegisterModal() {
-            document.getElementById('register-modal').classList.remove('flex');
-            document.getElementById('register-modal').classList.add('hidden');
-        }
-
-        function registerUser() {
-            const username = document.getElementById('reg-username').value.trim();
-            const referral = document.getElementById('reg-referral').value.trim();
-
-            if (!username) return alert("Username is required");
-
-            currentUser = {
-                id: Date.now(),
-                username: username,
-                points: 50,
-                wallet: 0,
-                referralCode: 'REF' + Date.now().toString().slice(-6),
-                referredBy: referral || null,
-                verifiedLevel: 1
-            };
-
-            // Give bonus points if used referral
-            if (referral) {
-                currentUser.points += 30;
+        chatChannel.onmessage = event => {
+            if (event.data.type === 'new_message') {
+                chatMessages.push(event.data.message);
+                saveAll();
+                if (event.data.category === currentChatCategory) renderChatMessages();
             }
+        };
 
+        function renderWallet() {
+            document.getElementById('wallet-balance').textContent = currentUser ? currentUser.wallet.toFixed(2) : '0.00';
+            document.getElementById('points-balance').textContent = currentUser ? currentUser.points : '0';
+            document.getElementById('verification-level').textContent = currentUser ? currentUser.verifiedLevel : '1';
+        }
+
+        function requestVerification() {
+            if (!currentUser) {
+                showLoginModal();
+                return;
+            }
+            if (currentUser.verifiedLevel >= 2) return alert('You are already Level 2 verified.');
+            if (currentUser.points < 120) return alert('Earn at least 120 points to unlock Level 2 verification.');
+            currentUser.verifiedLevel = 2;
+            syncCurrentUserToUsers();
             saveAll();
-            hideRegisterModal();
+            renderWallet();
+            alert('Congratulations! Your account is now Level 2 verified.');
+        }
+
+        function redeemFunds() {
+            if (!currentUser) {
+                showLoginModal();
+                return;
+            }
+            const amount = parseFloat(document.getElementById('redeem-amount').value);
+            if (!amount || amount <= 0) return alert('Enter a valid redemption amount.');
+            if (currentUser.verifiedLevel < 2) return alert('You need Level 2 verification to redeem funds.');
+            if (amount > currentUser.wallet) return alert('Insufficient wallet balance.');
+
+            currentUser.wallet -= amount;
+            currentUser.points += Math.ceil(amount / 5);
+            syncCurrentUserToUsers();
+            saveAll();
+            renderWallet();
             updateUserNav();
-            alert("Account created successfully! Welcome to the community.");
+            alert(`Redemption successful! $${amount.toFixed(2)} will be processed soon.`);
         }
 
         function updateUserNav() {
             const container = document.getElementById('user-nav');
             if (!currentUser) {
-                container.innerHTML = `
-                    <button onclick="showRegisterModal()" class="bg-teal-700 text-white px-6 py-2 rounded-3xl text-sm font-medium">Join Free</button>
-                `;
-            } else {
-                container.innerHTML = `
-                    <div class="flex items-center gap-x-3">
-                        <div onclick="showSection('profile')" class="cursor-pointer text-right">
-                            <div class="font-semibold">${currentUser.username}</div>
-                            <div class="text-xs text-teal-700">${currentUser.points} pts</div>
-                        </div>
-                        <button onclick="logout()" class="text-red-500 text-sm">Logout</button>
-                    </div>
-                `;
+                container.innerHTML = `<button onclick="showLoginModal()" class="bg-teal-700 text-white px-6 py-2 rounded-3xl text-sm font-medium">Join Free</button>`;
+                return;
             }
+            const referralCount = getReferralCount();
+            container.innerHTML = `
+                <div class="flex items-center gap-4">
+                    <div class="text-right cursor-pointer" onclick="showSection('profile')">
+                        <div class="font-semibold">${currentUser.username}</div>
+                        <div class="text-xs text-teal-700">${currentUser.points} pts · ${referralCount} referrals</div>
+                    </div>
+                    <button onclick="logout()" class="text-red-500 text-sm">Logout</button>
+                </div>
+            `;
         }
 
         function logout() {
             currentUser = null;
             localStorage.removeItem('gtf_user');
             updateUserNav();
-            location.reload();
+            renderProfile();
+            renderWallet();
+            showSection('forum');
         }
 
-        // ==================== INITIALIZATION ====================
-        function init() {
-            updateUserNav();
-            initChat();
+        function renderAdminPanel() {
+            if (!adminLogged) return;
+            const container = document.getElementById('admin-pending');
+            const pendingThreads = threads.filter(thread => thread.status === 'pending');
+            if (!container) return;
+            if (pendingThreads.length === 0) {
+                container.innerHTML = '<div class="text-slate-500">No pending threads at the moment.</div>';
+                return;
+            }
+            container.innerHTML = pendingThreads.map(thread => `
+                <div class="border border-[#e6d5c5] rounded-3xl p-6">
+                    <div class="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-start">
+                        <div>
+                            <div class="text-xs uppercase tracking-[0.2em] text-[#a4866d]">${thread.category}</div>
+                            <h3 class="text-xl font-semibold mt-3">${thread.title}</h3>
+                            <p class="text-slate-600 mt-3">${thread.body}</p>
+                            <p class="text-slate-500 text-sm mt-3">Submitted by ${thread.author} on ${new Date(thread.created_at).toLocaleDateString()}</p>
+                        </div>
+                        <div class="flex gap-3">
+                            <button onclick="reviewThread(${thread.id}, 'approved')" class="bg-teal-700 text-white rounded-3xl px-5 py-3">Approve</button>
+                            <button onclick="reviewThread(${thread.id}, 'rejected')" class="bg-red-500 text-white rounded-3xl px-5 py-3">Reject</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
 
-            // Demo threads
+        function reviewThread(id, action) {
+            const index = threads.findIndex(thread => thread.id === id);
+            if (index === -1) return;
+            threads[index].status = action;
+            if (action === 'approved') {
+                threads[index].points = 10;
+            }
+            saveAll();
+            renderAdminPanel();
+            renderThreads();
+        }
+
+        function showSection(section) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            const selected = document.getElementById(section);
+            if (selected) selected.classList.add('active');
+
+            document.querySelectorAll('nav button').forEach(btn => btn.classList.remove('nav-active'));
+            const activeNav = document.getElementById('nav-' + section);
+            if (activeNav) activeNav.classList.add('nav-active');
+
+            if (section === 'wallet') renderWallet();
+            if (section === 'profile') renderProfile();
+            if (section === 'admin') renderAdminPanel();
+        }
+
+        function init() {
+            if (currentUser) syncCurrentUserToUsers();
             if (threads.length === 0) {
                 threads = [
-                    { id: 1, title: "Best value hotels in Tbilisi old town 2026?", category: "Hotels & Stays", author: "maria_travels", points: 156, approved: true, created_at: new Date().toISOString() }
+                    { id: 1, title: 'Best boutique hotels in Tbilisi old town?', category: 'Hotels & Stays', body: 'Looking for refined yet affordable stays with local character.', author: 'maria_travels', points: 18, comment_count: 3, status: 'approved', created_at: new Date().toISOString() },
+                    { id: 2, title: 'Is Batumi good for winter travel?', category: 'Batumi', body: 'Curious about winter beach vibes and food scene.', author: 'travel_john', points: 0, comment_count: 0, status: 'pending', created_at: new Date().toISOString() }
                 ];
                 saveAll();
             }
+            updateUserNav();
+            renderChatCategories();
+            renderThreads();
+            renderChatMessages();
+            renderWallet();
+            renderProfile();
+            if (adminLogged) renderAdminPanel();
         }
 
         window.onload = init;
