@@ -11,38 +11,51 @@
 </head>
 <body data-theme="dark">
 
-<nav class="bg-[#020817]/80 backdrop-blur-xl border-b border-white/10 sticky top-0 z-50">
-  <div class="max-w-7xl mx-auto px-4 lg:px-6 h-16 flex items-center justify-between gap-2">
-    <div class="flex items-center gap-3 cursor-pointer" onclick="App.showSection('home')">
-      <span class="text-2xl">🌍</span>
-      <div>
-        <div class="font-semibold text-lg" data-i18n="siteName">Saqartour</div>
-        <div class="text-[10px] uppercase tracking-widest text-[#7a9bb6]" data-i18n="siteTagline">80+ Countries · Host & Traveler</div>
+<header class="site-header sticky top-0 z-50">
+  <div class="site-header-inner max-w-7xl mx-auto px-4 lg:px-6">
+    <div class="header-brand cursor-pointer" onclick="App.showSection('home')">
+      <div class="header-logo">ST</div>
+      <div class="header-brand-text">
+        <div class="header-brand-name" data-i18n="siteName">Saqartour</div>
+        <div class="header-brand-tag" data-i18n="siteTagline">80+ Countries · Host & Traveler</div>
       </div>
     </div>
-    <button id="mobile-menu-btn" onclick="App.toggleMobileNav()" class="xl:hidden btn-pill px-3 py-2" aria-label="Menu"><i class="fa-solid fa-bars"></i></button>
-    <div id="desktop-nav" class="hidden xl:flex items-center gap-1 text-sm overflow-x-auto">
-      <button data-nav="home" onclick="App.showSection('home')" class="btn-pill nav-active px-3 py-2" data-i18n="navHome">🏠 Home</button>
-      <button id="nav-dashboard-btn" data-nav="dashboard" onclick="App.showSection('dashboard')" class="btn-pill px-3 py-2 hidden" data-i18n="navDashboard">📊 Dashboard</button>
-      <button data-nav="tours" onclick="App.showSection('tours')" class="btn-pill px-3 py-2" data-i18n="navTours">🗺️ Tours</button>
-      <button data-nav="forum" onclick="App.showSection('forum')" class="btn-pill px-3 py-2" data-i18n="navForum">💬 Forum</button>
-      <button data-nav="live-chat" onclick="App.showSection('live-chat')" class="btn-pill px-3 py-2" data-i18n="navLiveChat">⚡ Chat</button>
-      <button data-nav="faq" onclick="App.showSection('faq')" class="btn-pill px-3 py-2" data-i18n="navFaq">❓ FAQ</button>
-      <button data-nav="bookings" onclick="App.showSection('bookings')" class="btn-pill px-3 py-2" data-i18n="navBookings">🎫 Bookings</button>
-      <button data-nav="wallet" onclick="App.showSection('wallet')" class="btn-pill px-3 py-2" data-i18n="navWallet">💰 Wallet</button>
-      <button data-nav="host-panel" onclick="App.showSection('host-panel')" class="btn-pill px-3 py-2" data-i18n="navHosts">🏠 Hosts</button>
-      <button data-nav="profile" onclick="App.showSection('profile')" class="btn-pill px-3 py-2" data-i18n="navProfile">👤 Profile</button>
-      <a href="/admin" class="btn-pill px-3 py-2 text-[#8b5cf6]" data-i18n="navAdmin">🛡️ Admin</a>
-    </div>
-    <div class="flex items-center gap-2">
-      <button id="theme-toggle" onclick="App.toggleTheme()" class="btn-pill px-3 py-2"><i class="fa-solid fa-moon"></i></button>
-      <select id="language-select" onchange="SaqartourI18n.setLanguage(this.value)" class="custom-select rounded-full px-2 py-2 text-sm">
-        <option value="en">EN</option><option value="ka">KA</option><option value="ru">RU</option><option value="ar">AR</option>
+    <button id="mobile-menu-btn" onclick="App.toggleMobileNav()" class="xl:hidden header-icon-btn" aria-label="Menu"><i class="fa-solid fa-bars"></i></button>
+    <nav id="desktop-nav" class="header-nav hidden xl:flex" aria-label="Main navigation">
+      <div class="nav-primary">
+        <button data-nav="home" onclick="App.showSection('home')" class="nav-link nav-active" data-i18n="navHome">Home</button>
+        <button data-nav="tours" onclick="App.showSection('tours')" class="nav-link" data-i18n="navTours">Tours</button>
+        <button data-nav="forum" onclick="App.showSection('forum')" class="nav-link" data-i18n="navForum">Forum</button>
+        <button data-nav="live-chat" onclick="App.showSection('live-chat')" class="nav-link" data-i18n="navLiveChat">Chat</button>
+      </div>
+      <div class="nav-more-wrap">
+        <button type="button" class="nav-link nav-more-btn" aria-haspopup="true">
+          <span data-i18n="navMore">More</span>
+          <i class="fa-solid fa-chevron-down nav-more-chevron"></i>
+        </button>
+        <div class="nav-more-dropdown" role="menu">
+          <button id="nav-dashboard-btn" data-nav="dashboard" onclick="App.showSection('dashboard')" class="nav-dropdown-item hidden" data-i18n="navDashboard">Dashboard</button>
+          <button data-nav="faq" onclick="App.showSection('faq')" class="nav-dropdown-item" data-i18n="navFaq">FAQ</button>
+          <button data-nav="bookings" onclick="App.showSection('bookings')" class="nav-dropdown-item" data-i18n="navBookings">Bookings</button>
+          <button data-nav="wallet" onclick="App.showSection('wallet')" class="nav-dropdown-item" data-i18n="navWallet">Wallet</button>
+          <button data-nav="host-panel" onclick="App.showSection('host-panel')" class="nav-dropdown-item" data-i18n="navHosts">Hosts</button>
+          <button data-nav="profile" onclick="App.showSection('profile')" class="nav-dropdown-item" data-i18n="navProfile">Profile</button>
+          <a href="/admin" class="nav-dropdown-item nav-dropdown-admin" data-i18n="navAdmin">Admin</a>
+        </div>
+      </div>
+    </nav>
+    <div class="header-actions">
+      <button id="theme-toggle" onclick="App.toggleTheme()" class="header-icon-btn" aria-label="Toggle theme"><i class="fa-solid fa-moon"></i></button>
+      <select id="language-select" onchange="SaqartourI18n.setLanguage(this.value)" class="header-lang-select custom-select" aria-label="Language">
+        <option value="en">🇬🇧 EN</option>
+        <option value="ka">🇬🇪 KA</option>
+        <option value="ru">🇷🇺 RU</option>
+        <option value="ar">🇸🇦 AR</option>
       </select>
       <div id="user-nav"></div>
     </div>
   </div>
-</nav>
+</header>
 
 <div id="mobile-nav" class="mobile-nav hidden xl:hidden">
   <button onclick="App.showSection('home');App.toggleMobileNav(false)" data-i18n="navHome">🏠 Home</button>
@@ -124,22 +137,47 @@
 </section>
 
 <!-- FORUM -->
-<section id="forum" class="section max-w-7xl mx-auto px-6 pt-10">
-  <div class="mb-6">
-    <h2 class="text-3xl font-bold">💬 Global Travel Forum</h2>
-    <p class="text-[#a0b9da] mt-1">Browse by country → city → topic</p>
-    <p id="forum-location-label" class="text-[#5eead4] text-sm mt-2 font-medium"></p>
-  </div>
-  <div class="glass-card p-4 mb-6">
-    <div class="grid sm:grid-cols-2 lg:grid-cols-5 gap-3">
-      <div><label class="text-xs text-[#7a9bb6]">🌍 Country</label><select id="forum-country" class="w-full custom-select rounded-full px-3 py-2 mt-1 text-sm"></select></div>
-      <div><label class="text-xs text-[#7a9bb6]">🏙️ City</label><select id="forum-city" class="w-full custom-select rounded-full px-3 py-2 mt-1 text-sm"></select></div>
-      <div><label class="text-xs text-[#7a9bb6]">📂 Topic</label><select id="forum-subcategory" class="w-full custom-select rounded-full px-3 py-2 mt-1 text-sm"></select></div>
-      <div><label class="text-xs text-[#7a9bb6]">↕️ Sort</label><select id="sort-threads" onchange="App.renderForum()" class="w-full custom-select rounded-full px-3 py-2 mt-1 text-sm"><option value="newest">Newest</option><option value="points">⭐ Points</option><option value="comments">💬 Comments</option></select></div>
-      <div class="flex items-end"><button onclick="App.openCreateThread()" class="btn-pill w-full bg-[#5eead4]/20 text-[#5eead4] py-2">➕ New Thread</button></div>
+<section id="forum" class="section forum-section max-w-[1400px] mx-auto px-4 lg:px-6 pt-8">
+  <div class="forum-layout">
+    <aside class="forum-sidebar glass-card" aria-label="Forum destinations">
+      <div class="forum-sidebar-head">
+        <h3 class="forum-sidebar-title" data-i18n="forumCountries">Countries</h3>
+        <p class="forum-sidebar-sub" data-i18n="forumDesc">Browse by country → city → topic</p>
+        <input id="forum-country-search" type="search" class="forum-country-search custom-select" data-i18n-placeholder="forumSearchCountry" placeholder="Search countries...">
+      </div>
+      <div id="forum-country-list" class="forum-country-list"></div>
+    </aside>
+    <div class="forum-main">
+      <div class="forum-main-head">
+        <div>
+          <h2 class="text-2xl lg:text-3xl font-bold" data-i18n="forumTitle">Global Travel Forum</h2>
+          <p id="forum-location-label" class="forum-location-label"></p>
+        </div>
+        <button onclick="App.openCreateThread()" class="btn-pill forum-new-thread-btn" data-i18n="newThread">New Thread</button>
+      </div>
+      <div class="glass-card forum-filters p-4 mb-4">
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          <div>
+            <label class="forum-filter-label" data-i18n="topic">Topic</label>
+            <select id="forum-subcategory" class="w-full custom-select rounded-full px-3 py-2 mt-1 text-sm"></select>
+          </div>
+          <div>
+            <label class="forum-filter-label" data-i18n="sort">Sort</label>
+            <select id="sort-threads" onchange="App.renderForum()" class="w-full custom-select rounded-full px-3 py-2 mt-1 text-sm">
+              <option value="newest" data-i18n="sortNewest">Newest</option>
+              <option value="points" data-i18n="sortPoints">Points</option>
+              <option value="comments" data-i18n="sortComments">Comments</option>
+            </select>
+          </div>
+          <div class="hidden">
+            <select id="forum-country" aria-hidden="true"></select>
+            <select id="forum-city" aria-hidden="true"></select>
+          </div>
+        </div>
+      </div>
+      <div class="glass-card forum-threads-card"><div id="threads-list" class="forum-threads-list"></div></div>
     </div>
   </div>
-  <div class="glass-card"><div id="threads-list" class="divide-y divide-white/10"></div></div>
 </section>
 
 <!-- LIVE CHAT -->
@@ -174,67 +212,67 @@
 
 <!-- FAQ -->
 <section id="faq" class="section max-w-4xl mx-auto px-6 pt-10">
-  <h2 class="text-3xl font-bold mb-2">❓ Frequently Asked Questions</h2>
-  <p class="text-[#a0b9da] mb-6">Everything you need to know about Saqartour</p>
+  <h2 class="text-3xl font-bold mb-2" data-i18n="faqTitle">Frequently Asked Questions</h2>
+  <p class="text-[#a0b9da] mb-6" data-i18n="faqDesc">Everything you need to know about Saqartour</p>
   <div class="flex flex-wrap gap-2 mb-6">
-    <button class="faq-cat-btn chat-pill active px-4 py-2 rounded-full" data-cat="all" onclick="App.filterFaqs('all')">📋 All</button>
-    <button class="faq-cat-btn chat-pill px-4 py-2 rounded-full" data-cat="account" onclick="App.filterFaqs('account')">👤 Account</button>
-    <button class="faq-cat-btn chat-pill px-4 py-2 rounded-full" data-cat="forum" onclick="App.filterFaqs('forum')">💬 Forum</button>
-    <button class="faq-cat-btn chat-pill px-4 py-2 rounded-full" data-cat="chat" onclick="App.filterFaqs('chat')">⚡ Chat</button>
-    <button class="faq-cat-btn chat-pill px-4 py-2 rounded-full" data-cat="wallet" onclick="App.filterFaqs('wallet')">💰 Wallet</button>
-    <button class="faq-cat-btn chat-pill px-4 py-2 rounded-full" data-cat="hosts" onclick="App.filterFaqs('hosts')">🏠 Hosts</button>
+    <button class="faq-cat-btn chat-pill active px-4 py-2 rounded-full" data-cat="all" onclick="App.filterFaqs('all')" data-i18n="faqAll">All</button>
+    <button class="faq-cat-btn chat-pill px-4 py-2 rounded-full" data-cat="account" onclick="App.filterFaqs('account')" data-i18n="faqAccount">Account</button>
+    <button class="faq-cat-btn chat-pill px-4 py-2 rounded-full" data-cat="forum" onclick="App.filterFaqs('forum')" data-i18n="faqForum">Forum</button>
+    <button class="faq-cat-btn chat-pill px-4 py-2 rounded-full" data-cat="chat" onclick="App.filterFaqs('chat')" data-i18n="faqChat">Chat</button>
+    <button class="faq-cat-btn chat-pill px-4 py-2 rounded-full" data-cat="wallet" onclick="App.filterFaqs('wallet')" data-i18n="faqWallet">Wallet</button>
+    <button class="faq-cat-btn chat-pill px-4 py-2 rounded-full" data-cat="hosts" onclick="App.filterFaqs('hosts')" data-i18n="faqHosts">Hosts</button>
   </div>
   <div id="faq-list"></div>
 </section>
 
 <!-- BOOKINGS -->
 <section id="bookings" class="section max-w-4xl mx-auto px-6 pt-10">
-  <h2 class="text-3xl font-bold mb-6">🎫 My Bookings</h2>
+  <h2 class="text-3xl font-bold mb-6" data-i18n="bookingsTitle">My Bookings</h2>
   <div class="glass-card p-8"><div id="bookings-list"></div></div>
 </section>
 
 <!-- HOST LISTINGS PUBLIC -->
 <section id="host-panel" class="section max-w-7xl mx-auto px-6 pt-10">
-  <h2 class="text-3xl font-bold mb-2">🏠 Host Marketplace</h2>
-  <p class="text-[#a0b9da] mb-6">Real listings from verified hosts — hotels, car rentals, tours</p>
+  <h2 class="text-3xl font-bold mb-2" data-i18n="hostTitle">Host Marketplace</h2>
+  <p class="text-[#a0b9da] mb-6" data-i18n="hostDesc">Real listings from verified hosts — hotels, car rentals, tours</p>
   <div id="host-listings-public" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10"></div>
   <div id="host-panel-content" class="glass-card p-8"></div>
 </section>
 
 <!-- WALLET -->
 <section id="wallet" class="section max-w-5xl mx-auto px-6 pt-10">
-  <h2 class="text-3xl font-bold mb-6">💰 Wallet & Rewards</h2>
+  <h2 class="text-3xl font-bold mb-6" data-i18n="walletTitle">Wallet & Rewards</h2>
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-    <div class="glass-card p-8"><div class="text-sm text-[#7a9bb6]">💵 Balance</div><div class="text-4xl font-bold mt-2">$<span id="wallet-balance">0.00</span></div></div>
-    <div class="glass-card p-8"><div class="text-sm text-[#7a9bb6]">⭐ Points</div><div class="text-4xl font-bold mt-2 text-[#5eead4]"><span id="points-balance">0</span></div></div>
-    <div class="glass-card p-8"><div class="text-sm text-[#7a9bb6]">🎖️ Level</div><div class="text-4xl font-bold mt-2">L<span id="verification-level">1</span><button onclick="App.requestVerification()" class="btn-pill w-full mt-4 bg-[#5eead4] text-slate-950 py-2 text-sm">Upgrade L2</button></div>
+    <div class="glass-card p-8"><div class="text-sm text-[#7a9bb6]" data-i18n="balance">Balance</div><div class="text-4xl font-bold mt-2">$<span id="wallet-balance">0.00</span></div></div>
+    <div class="glass-card p-8"><div class="text-sm text-[#7a9bb6]" data-i18n="points">Points</div><div class="text-4xl font-bold mt-2 text-[#5eead4]"><span id="points-balance">0</span></div></div>
+    <div class="glass-card p-8"><div class="text-sm text-[#7a9bb6]" data-i18n="level">Level</div><div class="text-4xl font-bold mt-2">L<span id="verification-level">1</span><button onclick="App.requestVerification()" class="btn-pill w-full mt-4 bg-[#5eead4] text-slate-950 py-2 text-sm" data-i18n="upgradeL2">Upgrade L2</button></div>
   </div>
   <div class="glass-card p-8 mb-6">
-    <h3 class="text-xl font-semibold mb-2">💳 Top Up via Stripe</h3>
-    <p class="text-sm text-[#7a9bb6] mb-4">Real card payment — secured by Stripe</p>
+    <h3 class="text-xl font-semibold mb-2" data-i18n="topUpTitle">Top Up via Stripe</h3>
+    <p class="text-sm text-[#7a9bb6] mb-4" data-i18n="topUpDesc">Real card payment — secured by Stripe</p>
     <div class="grid sm:grid-cols-2 gap-3">
       <input id="topup-amount" type="number" value="50" min="1" class="custom-select rounded-full px-4 py-3">
-      <button onclick="App.topUpWallet()" class="btn-pill bg-[#5eead4] text-slate-950 py-3">Pay with Card 💳</button>
+      <button onclick="App.topUpWallet()" class="btn-pill bg-[#5eead4] text-slate-950 py-3" data-i18n="payCard">Pay with Card</button>
     </div>
   </div>
   <div class="glass-card p-8 mb-6">
-    <h3 class="text-xl font-semibold mb-4">💸 Redeem</h3>
-    <p class="text-sm text-[#7a9bb6] mb-3">Real withdrawal — processed in 3–5 business days</p>
+    <h3 class="text-xl font-semibold mb-4" data-i18n="redeemTitle">Redeem</h3>
+    <p class="text-sm text-[#7a9bb6] mb-3" data-i18n="redeemDesc">Real withdrawal — processed in 3–5 business days</p>
     <div class="grid sm:grid-cols-2 gap-3">
-      <input id="redeem-amount" type="number" placeholder="USD amount" class="custom-select rounded-full px-4 py-3">
-      <button onclick="App.redeemFunds()" class="btn-pill bg-[#5eead4] text-slate-950 py-3">Request Redemption</button>
+      <input id="redeem-amount" type="number" data-i18n-placeholder="redeemAmount" placeholder="USD amount" class="custom-select rounded-full px-4 py-3">
+      <button onclick="App.redeemFunds()" class="btn-pill bg-[#5eead4] text-slate-950 py-3" data-i18n="requestRedemption">Request Redemption</button>
     </div>
   </div>
   <div class="glass-card p-8">
-    <h3 class="text-xl font-semibold mb-4">📜 Transaction History</h3>
+    <h3 class="text-xl font-semibold mb-4" data-i18n="txHistory">Transaction History</h3>
     <div id="transactions-list"></div>
   </div>
 </section>
 
 <!-- PROFILE -->
-<section id="profile" class="section max-w-4xl mx-auto px-6 pt-10">
-  <h2 class="text-3xl font-bold mb-6">👤 Your Profile</h2>
-  <div id="profile-content" class="glass-card p-8"></div>
+<section id="profile" class="section profile-section max-w-5xl mx-auto px-4 lg:px-6 pt-8">
+  <h2 class="text-2xl lg:text-3xl font-bold mb-6" data-i18n="profileTitle">Your Profile</h2>
+  <div id="profile-content"></div>
 </section>
 
 <!-- REGISTER MODAL -->

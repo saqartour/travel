@@ -381,16 +381,96 @@ const App = {
     const fs = document.getElementById('forum-subcategory');
     if (fc) {
       fc.innerHTML = SaqartourRegions.countryOptions(this.forumCountry);
-      fc.onchange = () => { this.forumCountry = fc.value; fci.innerHTML = SaqartourRegions.cityOptions(fc.value, this.forumCity); this.renderForum(); };
+      fc.onchange = () => { this.forumCountry = fc.value; fci.innerHTML = SaqartourRegions.cityOptions(fc.value, this.forumCity); this.renderForumSidebar(); this.renderForum(); };
     }
     if (fci) {
       fci.innerHTML = SaqartourRegions.cityOptions(this.forumCountry, this.forumCity);
-      fci.onchange = () => { this.forumCity = fci.value; this.renderForum(); };
+      fci.onchange = () => { this.forumCity = fci.value; this.renderForumSidebar(); this.renderForum(); };
     }
     if (fs) {
       fs.innerHTML = SaqartourRegions.subcategoryOptions(this.forumSubcategory);
       fs.onchange = () => { this.forumSubcategory = fs.value; this.renderForum(); };
     }
+    const search = document.getElementById('forum-country-search');
+    if (search && !search.dataset.bound) {
+      search.dataset.bound = '1';
+      search.addEventListener('input', () => this.filterForumCountries(search.value.trim()));
+    }
+    this.renderForumSidebar();
+  },
+
+  renderForumSidebar() {
+    const list = document.getElementById('forum-country-list');
+    if (!list) return;
+    const allCities = this.t('allCities');
+    list.innerHTML = SaqartourRegions.countries.map(c => {
+      const active = c.code === this.forumCountry;
+      const cities = (c.cities || []).map(city => `
+        <button type="button" class="forum-city-btn ${this.forumCity === city && active ? 'is-active' : ''}"
+          data-country="${c.code}" data-city="${this.escapeHtml(city)}"
+          onclick="App.selectForumLocation(this.dataset.country, this.dataset.city)">🏙️ ${city}</button>`
+      ).join('');
+      return `
+        <div class="forum-country-item ${active ? 'is-active' : ''}" data-country="${c.code}" data-name="${c.name.toLowerCase()}">
+          <button type="button" class="forum-country-btn" data-country="${c.code}" data-city=""
+            onclick="App.selectForumLocation(this.dataset.country, '')">
+            <span class="forum-country-flag">${c.flag}</span>
+            <span class="forum-country-name">${c.name}</span>
+            <span class="forum-country-chevron"><i class="fa-solid fa-chevron-right"></i></span>
+          </button>
+          <div class="forum-city-flyout" role="menu">
+            <button type="button" class="forum-city-btn forum-city-btn-all ${active && !this.forumCity ? 'is-active' : ''}"
+              data-country="${c.code}" data-city=""
+              onclick="App.selectForumLocation(this.dataset.country, '')">${allCities}</button>
+            ${cities}
+          </div>
+        </div>`;
+    }).join('');
+  },
+
+  filterForumCountries(query) {
+    const q = query.toLowerCase();
+    document.querySelectorAll('.forum-country-item').forEach(el => {
+      const name = el.dataset.name || '';
+      const code = (el.dataset.country || '').toLowerCase();
+      el.style.display = !q || name.includes(q) || code.includes(q) ? '' : 'none';
+    });
+  },
+
+  selectForumLocation(country, city) {
+    this.forumCountry = country;
+    this.forumCity = city || '';
+    const fc = document.getElementById('forum-country');
+    const fci = document.getElementById('forum-city');
+    if (fc) fc.value = country;
+    if (fci) {
+      fci.innerHTML = SaqartourRegions.cityOptions(country, this.forumCity);
+      fci.value = this.forumCity;
+    }
+    this.renderForumSidebar();
+    this.renderForum();
+    if (window.innerWidth < 1024) {
+      document.querySelectorAll('.forum-country-item').forEach(el => el.classList.remove('is-expanded'));
+      document.querySelector(`.forum-country-item[data-country="${country}"]`)?.classList.add('is-expanded');
+    }
+  },
+
+  getPointsTier(points) {
+    const tiers = [
+      { id: 'elite', min: 600, labelKey: 'tierElite', icon: '👑' },
+      { id: 'ambassador', min: 300, labelKey: 'tierAmbassador', icon: '🌟' },
+      { id: 'voyager', min: 120, labelKey: 'tierVoyager', icon: '✈️' },
+      { id: 'explorer', min: 0, labelKey: 'tierExplorer', icon: '🧭' }
+    ];
+    const current = tiers.find(t => points >= t.min) || tiers[tiers.length - 1];
+    const currentIdx = tiers.indexOf(current);
+    const next = currentIdx > 0 ? tiers[currentIdx - 1] : null;
+    const nextAt = next ? next.min : null;
+    const prevMin = current.min;
+    const progress = nextAt
+      ? Math.min(100, Math.round(((points - prevMin) / (nextAt - prevMin)) * 100))
+      : 100;
+    return { current, next, nextAt, progress, pointsToNext: nextAt ? Math.max(0, nextAt - points) : 0 };
   },
 
   initChatFilters() {
@@ -571,13 +651,20 @@ const App = {
     const country = document.getElementById('forum-country')?.value || this.forumCountry;
     const city = document.getElementById('forum-city')?.value || this.forumCity;
     const sub = document.getElementById('forum-subcategory')?.value || this.forumSubcategory;
+    this.forumCountry = country;
+    this.forumCity = city;
+    this.renderForumSidebar();
     const q = new URLSearchParams({ sort, country, city, subcategory: sub });
     try {
       const { threads } = await SaqartourAPI.get(`/forum/threads?${q}`);
       const list = document.getElementById('threads-list');
       const c = SaqartourRegions.getCountry(country);
-      document.getElementById('forum-location-label').textContent =
-        `${c?.flag || ''} ${c?.name || country}${city ? ' → 🏙️ ' + city : ''}`;
+      const locLabel = document.getElementById('forum-location-label');
+      if (locLabel) {
+        locLabel.textContent = city
+          ? `${c?.flag || ''} ${c?.name || country} → 🏙️ ${city}`
+          : `${c?.flag || ''} ${c?.name || country} · ${this.t('forumAllCountry')}`;
+      }
       if (!threads.length) {
         list.innerHTML = `<div class="p-8 text-[#7a9bb6]">${this.t('noThreads')}</div>`;
         return;
@@ -874,46 +961,105 @@ const App = {
     const el = document.getElementById('profile-content');
     if (!el) return;
     if (!this.currentUser) {
-      el.innerHTML = `<p class="text-[#a0b9da]">✨ ${this.t('joinUnlock')}</p>`;
+      el.innerHTML = `<div class="glass-card p-8"><p class="text-[var(--muted)]">✨ ${this.t('joinUnlock')}</p></div>`;
       return;
     }
     const u = this.currentUser;
+    const tier = this.getPointsTier(u.points || 0);
     const typeBadge = u.account_type === 'host' ? '🏠 ' + this.t('hostBadge') : '🧳 ' + this.t('travelerBadge');
+    const verifiedLvl = u.verified_level || 1;
+    const inviteUrl = `${window.location.origin}${window.location.pathname}?ref=${u.referral_code}`;
+    const progressText = tier.next
+      ? this.t('profileNextTier', { pts: tier.pointsToNext, tier: this.t(tier.next.labelKey) })
+      : this.t('profileMaxTier');
+    const rewards = [
+      { icon: '🎁', title: this.t('pointsRewardReferral'), desc: this.t('pointsRewardReferralDesc') },
+      { icon: '🏠', title: this.t('pointsRewardHost'), desc: this.t('pointsRewardHostDesc') },
+      { icon: '💬', title: this.t('pointsRewardThread'), desc: this.t('pointsRewardThreadDesc') },
+      { icon: '💸', title: this.t('pointsRewardRedeem'), desc: this.t('pointsRewardRedeemDesc') },
+      { icon: '🎖️', title: this.t('pointsRewardL2'), desc: this.t('pointsRewardL2Desc') }
+    ];
     el.innerHTML = `
-      <div class="grid gap-6 lg:grid-cols-2">
-        <div>
-          <div class="flex items-center gap-3">
-            <span class="text-4xl">${u.account_type === 'host' ? '🏠' : '🧳'}</span>
-            <div>
-              <h3 class="text-3xl font-bold">${u.username}</h3>
-              <span class="text-sm text-[#5eead4]">${typeBadge}</span>
+      <div class="profile-invite-card glass-card">
+        <div class="flex flex-wrap items-start justify-between gap-4">
+          <div class="max-w-xl">
+            <h3 class="text-xl font-bold">${this.t('profileInviteTitle')}</h3>
+            <p class="text-sm text-[var(--muted)] mt-2">${this.t('profileInviteDesc')}</p>
+          </div>
+          <div class="text-right">
+            <div class="profile-referral-code">${u.referral_code}</div>
+            <div class="flex flex-wrap gap-2 mt-3 justify-end">
+              <button onclick="navigator.clipboard.writeText('${u.referral_code}');alert('${this.t('copied')}')" class="btn-pill px-4 py-2 text-sm">${this.t('copyReferral')}</button>
+              <button onclick="navigator.clipboard.writeText('${inviteUrl}');alert('${this.t('copied')}')" class="btn-pill px-4 py-2 text-sm bg-[var(--hover-bg)]">${this.t('copyReferralLink')}</button>
             </div>
           </div>
-          <p class="text-[#7a9bb6] mt-3">📧 ${u.email} ${u.verified_email ? '✅' : '⚠️ ' + this.t('unverified')}</p>
-          <p class="text-sm mt-3">🌍 ${u.nationality || '—'}</p>
-          <p class="text-sm">🎁 ${this.t('referral')}: <code class="text-[#5eead4]">${u.referral_code}</code></p>
-          <p class="text-sm mt-2">⭐ ${u.points} ${this.t('points')} · 💰 $${(u.wallet || 0).toFixed(2)}</p>
         </div>
-        <div class="space-y-4">
-          <div>
-            <label class="text-xs text-[#7a9bb6] uppercase">✏️ ${this.t('changeUsername')}</label>
-            <div class="flex gap-2 mt-1">
-              <input id="profile-username" value="${u.username}" class="flex-1 custom-select rounded-full px-4 py-3 border border-white/10 bg-[#071422]/90">
-              <button onclick="App.changeUsername()" class="btn-pill bg-[#8b5cf6] text-white px-4 py-3">${this.t('save')}</button>
+      </div>
+      <div class="profile-hero">
+        <div class="profile-identity-card glass-card">
+          <div class="relative z-10 flex flex-wrap items-center gap-4">
+            <div class="profile-avatar-ring">${u.account_type === 'host' ? '🏠' : '🧳'}</div>
+            <div class="min-w-0 flex-1">
+              <h3 class="text-2xl lg:text-3xl font-bold truncate">${u.username}</h3>
+              <div class="flex flex-wrap items-center gap-2 mt-2">
+                <span class="text-sm text-[var(--primary)]">${typeBadge}</span>
+                <span class="profile-tier-badge">${tier.current.icon} ${this.t(tier.current.labelKey)}</span>
+                ${verifiedLvl >= 2 ? `<span class="profile-tier-badge">L${verifiedLvl} ✓</span>` : ''}
+              </div>
+              <p class="text-sm text-[var(--muted)] mt-3">📧 ${u.email} ${u.verified_email ? '✅' : '⚠️ ' + this.t('unverified')}</p>
+              <p class="text-sm text-[var(--muted)] mt-1">🌍 ${u.nationality || '—'}</p>
             </div>
           </div>
-          <input id="profile-address" value="${u.address || ''}" placeholder="📍 ${this.t('regAddress')}" class="w-full custom-select rounded-full px-4 py-3 border border-white/10 bg-[#071422]/90">
-          <select id="profile-nationality" class="w-full custom-select rounded-full px-4 py-3 border border-white/10 bg-[#071422]/90">
-            ${SaqartourRegions.countries.map(c => `<option value="${c.name}" ${u.nationality===c.name?'selected':''}>${c.flag} ${c.name}</option>`).join('')}
-          </select>
-          <button onclick="App.saveProfile()" class="btn-pill w-full bg-[#5eead4] text-slate-950 py-3">💾 ${this.t('saveProfile')}</button>
-          ${!u.verified_email ? `<button onclick="App.modal('verify-email-modal',true)" class="btn-pill w-full border border-amber-400/50 py-3">✉️ ${this.t('verifyNow')}</button>` : ''}
-          <div class="pt-4 border-t border-white/10">
-            <label class="text-xs text-[#7a9bb6] uppercase">🔐 ${this.t('changePassword')}</label>
-            <input id="profile-current-pass" type="password" placeholder="${this.t('currentPassword')}" class="w-full custom-select rounded-full px-4 py-3 mt-2 border border-white/10 bg-[#071422]/90">
-            <input id="profile-new-pass" type="password" placeholder="${this.t('newPass')}" class="w-full custom-select rounded-full px-4 py-3 mt-2 border border-white/10 bg-[#071422]/90">
-            <input id="profile-new-pass2" type="password" placeholder="${this.t('confirmPass')}" class="w-full custom-select rounded-full px-4 py-3 mt-2 border border-white/10 bg-[#071422]/90">
-            <button onclick="App.changePassword()" class="btn-pill w-full mt-3 border border-white/20 py-3">${this.t('changePasswordBtn')}</button>
+          <div class="relative z-10 profile-progress-wrap">
+            <div class="flex justify-between text-xs text-[var(--muted)] mb-1">
+              <span>${this.t('profileTier')}</span>
+              <span>${progressText}</span>
+            </div>
+            <div class="profile-progress-bar"><div class="profile-progress-fill" style="width:${tier.progress}%"></div></div>
+          </div>
+          <div class="relative z-10 profile-stats-grid">
+            <div class="profile-stat"><strong>${u.points || 0}</strong><span>${this.t('points')}</span></div>
+            <div class="profile-stat"><strong>$${(u.wallet || 0).toFixed(0)}</strong><span>${this.t('balance')}</span></div>
+            <div class="profile-stat"><strong>L${verifiedLvl}</strong><span>${this.t('level')}</span></div>
+          </div>
+        </div>
+        <div class="profile-rewards-card glass-card">
+          <h4 class="font-bold text-lg mb-1">${this.t('profilePointsTitle')}</h4>
+          <p class="text-xs text-[var(--muted)] mb-3">${this.t('profilePointsDesc')}</p>
+          ${rewards.map(r => `
+            <div class="profile-reward-item">
+              <div class="profile-reward-icon">${r.icon}</div>
+              <div>
+                <div class="font-semibold text-sm">${r.title}</div>
+                <div class="text-xs text-[var(--muted)] mt-0.5">${r.desc}</div>
+              </div>
+            </div>`).join('')}
+        </div>
+      </div>
+      <div class="profile-settings-card glass-card">
+        <h4 class="font-bold text-lg mb-4">${this.t('profileSettings')}</h4>
+        <div class="grid gap-4 lg:grid-cols-2">
+          <div class="space-y-4">
+            <div>
+              <label class="text-xs text-[var(--muted)] uppercase">${this.t('changeUsername')}</label>
+              <div class="flex gap-2 mt-1">
+                <input id="profile-username" value="${u.username}" class="flex-1 custom-select rounded-full px-4 py-3 border border-white/10">
+                <button onclick="App.changeUsername()" class="btn-pill px-4 py-3">${this.t('save')}</button>
+              </div>
+            </div>
+            <input id="profile-address" value="${u.address || ''}" placeholder="${this.t('regAddress')}" class="w-full custom-select rounded-full px-4 py-3 border border-white/10">
+            <select id="profile-nationality" class="w-full custom-select rounded-full px-4 py-3 border border-white/10">
+              ${SaqartourRegions.countries.map(c => `<option value="${c.name}" ${u.nationality===c.name?'selected':''}>${c.flag} ${c.name}</option>`).join('')}
+            </select>
+            <button onclick="App.saveProfile()" class="btn-pill w-full py-3 font-semibold" style="background:var(--primary);color:#041018">${this.t('saveProfile')}</button>
+            ${!u.verified_email ? `<button onclick="App.modal('verify-email-modal',true)" class="btn-pill w-full border border-amber-400/50 py-3">✉️ ${this.t('verifyNow')}</button>` : ''}
+          </div>
+          <div class="pt-0 lg:pt-0 lg:pl-4 lg:border-l border-[var(--border)]">
+            <label class="text-xs text-[var(--muted)] uppercase">${this.t('changePassword')}</label>
+            <input id="profile-current-pass" type="password" placeholder="${this.t('currentPassword')}" class="w-full custom-select rounded-full px-4 py-3 mt-2 border border-white/10">
+            <input id="profile-new-pass" type="password" placeholder="${this.t('newPass')}" class="w-full custom-select rounded-full px-4 py-3 mt-2 border border-white/10">
+            <input id="profile-new-pass2" type="password" placeholder="${this.t('confirmPass')}" class="w-full custom-select rounded-full px-4 py-3 mt-2 border border-white/10">
+            <button onclick="App.changePassword()" class="btn-pill w-full mt-3 py-3">${this.t('changePasswordBtn')}</button>
           </div>
         </div>
       </div>`;

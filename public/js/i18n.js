@@ -3,6 +3,12 @@ window.SaqartourI18n = {
   translations: {},
   ready: false,
   fallback: {},
+  languages: [
+    { code: 'en', flag: '🇬🇧', label: 'EN' },
+    { code: 'ka', flag: '🇬🇪', label: 'KA' },
+    { code: 'ru', flag: '🇷🇺', label: 'RU' },
+    { code: 'ar', flag: '🇸🇦', label: 'AR' }
+  ],
 
   async init() {
     try {
@@ -52,8 +58,16 @@ window.SaqartourI18n = {
     document.title = dict.pageTitle || 'Saqartour';
     const meta = document.querySelector('meta[name="description"]');
     if (meta && dict.metaDesc) meta.content = dict.metaDesc;
+    this.renderLanguageSelect();
+  },
+
+  renderLanguageSelect() {
     const sel = document.getElementById('language-select');
-    if (sel) sel.value = this.lang;
+    if (!sel) return;
+    sel.innerHTML = this.languages.map(l =>
+      `<option value="${l.code}">${l.flag} ${l.label}</option>`
+    ).join('');
+    sel.value = this.lang;
   },
 
   async setLanguage(lang) {
