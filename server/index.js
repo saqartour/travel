@@ -49,9 +49,10 @@ app.use('/api/hosts', require('./routes/hosts'));
 app.use('/api/admin', require('./routes/admin'));
 
 app.get('/api/health', (_req, res) => {
+  const { version } = require('../package.json');
   res.json({
     status: 'ok',
-    version: '3.0.0',
+    version,
     features: {
       emailOutbox: !isSmtpConfigured(),
       smtp: isSmtpConfigured(),

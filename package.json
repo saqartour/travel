@@ -1,6 +1,6 @@
 {
   "name": "saqartour-travel",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Saqartour Georgia Travel Hub — full-stack travel platform with admin CRM",
   "main": "server/index.js",
   "scripts": {
